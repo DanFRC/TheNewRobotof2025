@@ -1,13 +1,13 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.Drivebase;
+import frc.robot.subsystems.MecanumDrivebase;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class InvertCmd extends Command {
 
-  private final Drivebase m_subsystem;
+  private final MecanumDrivebase m_subsystem;
 
-  public InvertCmd(Drivebase subsystem) {
+  public InvertCmd(MecanumDrivebase subsystem) {
     m_subsystem = subsystem;
 
     addRequirements(subsystem);

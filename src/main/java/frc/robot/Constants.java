@@ -21,6 +21,6 @@ public final class Constants {
 
   public static class ElevatorConstants {
     public static final int kElevatorMotorPort = 4;
-    public static DutyCycle kEncoderPort;
+    public static final int kEncoderPort = 4;
   }
 }

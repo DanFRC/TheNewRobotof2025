@@ -5,10 +5,11 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.ArcadeDriveMecanum;
 import frc.robot.commands.Autos;
 import frc.robot.commands.InvertCmd;
 import frc.robot.subsystems.Drivebase;
+import frc.robot.subsystems.MecanumDrivebase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -19,10 +20,10 @@ public class RobotContainer {
   // Define Subsystems
   private final CommandXboxController _driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final Drivebase _drivebase = new Drivebase();
+  private final MecanumDrivebase _drivebase = new MecanumDrivebase();
 
   // Define Commands
-  private final ArcadeDrive arcadeDriveCmd = new ArcadeDrive(_drivebase, _driverController);
+  private final ArcadeDriveMecanum arcadeDriveCmd = new ArcadeDriveMecanum(_drivebase, _driverController);
 
   public RobotContainer() {
     configureBindings();

@@ -4,7 +4,7 @@ import frc.robot.subsystems.Drivebase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class ArcadeDrive extends Command {
+public class ArcadeDriveDifferential extends Command {
 
   private final Drivebase _drivebase;
 
@@ -13,7 +13,7 @@ public class ArcadeDrive extends Command {
   private double driveSpeed = 0;
   private double turnSpeed = 0;
 
-  public ArcadeDrive(Drivebase drivebase, CommandXboxController controller) {
+  public ArcadeDriveDifferential(Drivebase drivebase, CommandXboxController controller) {
     _drivebase = drivebase;
     thisController = controller;
 
