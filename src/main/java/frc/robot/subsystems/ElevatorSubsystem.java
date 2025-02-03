@@ -12,6 +12,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //Definitions
     private final VictorSPX _liftMotor = new VictorSPX(ElevatorConstants.kElevatorMotorPort);
+    // Elevator confirmed using a REV through bore encoder
     private final DutyCycleEncoder _encoder = new DutyCycleEncoder(ElevatorConstants.kEncoderPort);
 
     public ElevatorSubsystem() {
