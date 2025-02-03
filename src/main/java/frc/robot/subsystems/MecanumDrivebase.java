@@ -6,14 +6,14 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+// import edu.wpi.first.math.geometry.Translation2d;
+// import edu.wpi.first.math.kinematics.ChassisSpeeds;
+// import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 // import com.studica.frc.AHRS.NavXComType;
 // import com.studica.frc.AHRS;
-import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
-import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+// import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
+// import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+// import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,12 +25,10 @@ public class MecanumDrivebase extends SubsystemBase {
 
   // gyro calibration constant, may need to be adjusted;
   // gyro value of 360 is set to correspond to one full revolution
-  private double finalDriveSpeed = 0;
   private double thisDriveSpeedx = 0;
   private double thisDriveSpeedy = 0;
   private double thisTurnspeed = 0;
 
-  private Rotation2d rotation = new Rotation2d(gyro.getYaw());
   // Probably won't need this because mecanum drive is field oriented using the NavX
   private double invert = 1;
 
@@ -84,10 +82,7 @@ public class MecanumDrivebase extends SubsystemBase {
         thisDriveSpeedx = driveSpeedx * invert;
         thisDriveSpeedy = driveSpeedy * -invert;
         thisTurnspeed = turnSpeed;
-        _robotDrive.driveCartesian(thisDriveSpeedx, thisDriveSpeedy, thisTurnspeed, new Rotation2d(-gyro.getYaw())); // this actually takes 4 values, x speed, y speed, turns speed, and the gyro angle, potentially for field centric driving!
-
-        // Help visualise data
-        finalDriveSpeed = driveSpeedx;
+        _robotDrive.driveCartesian(thisDriveSpeedx, thisDriveSpeedy, thisTurnspeed, new Rotation2d(-gyro.getYaw())); // UPDATE: field centric drive is now working. this actually takes 4 values, x speed, y speed, turns speed, and the gyro angle, potentially for field centric driving!
     }
     
     public void invertDrive() {

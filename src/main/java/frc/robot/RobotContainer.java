@@ -6,14 +6,14 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDriveMecanum;
-import frc.robot.commands.Autos;
+//import frc.robot.commands.Autos;
 import frc.robot.commands.InvertCmd;
 import frc.robot.commands.ResetGyroCmd;
 import frc.robot.subsystems.MecanumDrivebase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger; // Useful later but not as of 29.01.25
+//import edu.wpi.first.wpilibj2.command.button.Trigger; // Useful later but not as of 29.01.25
 
 public class RobotContainer {
 
