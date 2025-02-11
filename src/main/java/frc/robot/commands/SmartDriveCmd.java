@@ -57,7 +57,7 @@ public class SmartDriveCmd extends Command {
     driveSpeedx = thisController.getX();
 
     if (thisbuttonControls.getRawButton(1) == true) {
-      additiveTurn = 45;
+      additiveTurn = 54;
     } else {
       double twist = thisController.getTwist();
       additiveTurn += twist * (2.5 + Math.abs(twist));
