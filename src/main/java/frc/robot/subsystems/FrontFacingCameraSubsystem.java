@@ -12,6 +12,7 @@ public class FrontFacingCameraSubsystem extends SubsystemBase {
     
     private double y;
     private double distance;
+    private int tag;
 
     public FrontFacingCameraSubsystem() {
     }
@@ -19,8 +20,13 @@ public class FrontFacingCameraSubsystem extends SubsystemBase {
 
     // call for this to get left right distance from the april tag. Commonly used for aligning the robot with april tags
     // intended use, lining up the robot with the april tag to allow for easy line ups with the reef.
-    public double getLeftRightDistanceFromTag() {
+    public double getYDistanceFromTag() {
             return y;
+    }
+
+    // Get the april tag ID
+    public int getTagID() {
+        return tag;
     }
 
     // call for this to get the camera's calculated distance from the april tag. It returns metres.
@@ -46,6 +52,7 @@ public class FrontFacingCameraSubsystem extends SubsystemBase {
             // Returned values
             distance = periodicDistance;
             y = bestCamera.getY();
+            tag = target.getFiducialId();
         }
         // For better visualisation on the SmartDashboard.
         SmartDashboard.putNumber("Found tag distance", periodicDistance);

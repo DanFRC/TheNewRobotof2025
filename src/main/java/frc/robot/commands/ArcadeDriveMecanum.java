@@ -1,21 +1,22 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.MecanumDrivebase;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
 public class ArcadeDriveMecanum extends Command {
 
   private final MecanumDrivebase _drivebase;
 
   // Define stuff
-  private CommandXboxController thisController;
+  private CommandJoystick thisController;
   private double driveSpeedx = 0;
   private double driveSpeedy = 0;
   private double turnSpeed = 0;
 
-  public ArcadeDriveMecanum(MecanumDrivebase drivebase, CommandXboxController controller) {
+  public ArcadeDriveMecanum(MecanumDrivebase drivebase, CommandJoystick controller) {
     _drivebase = drivebase;
     thisController = controller;
 
@@ -29,9 +30,9 @@ public class ArcadeDriveMecanum extends Command {
 
   @Override
   public void execute() {
-    driveSpeedy = thisController.getLeftY();
-    driveSpeedx = thisController.getLeftX();
-    turnSpeed = thisController.getRightX();
+    driveSpeedy = thisController.getY();
+    driveSpeedx = thisController.getX();
+    turnSpeed = thisController.getTwist();
     // Takes in four values, x speed, y speed, turns speed, and a Gyro Ange.
     _drivebase.drive(driveSpeedx, driveSpeedy, turnSpeed);
 

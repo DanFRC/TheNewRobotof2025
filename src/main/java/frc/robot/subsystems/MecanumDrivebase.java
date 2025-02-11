@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 // import edu.wpi.first.math.geometry.Translation2d;
 // import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -22,6 +23,8 @@ import frc.robot.Constants.DrivebaseContants;
 public class MecanumDrivebase extends SubsystemBase {
 
     final AHRS gyro = new AHRS(NavXComType.kUSB1);
+
+    private Rotation2d rotation = new Rotation2d();
 
   // gyro calibration constant, may need to be adjusted;
   // gyro value of 360 is set to correspond to one full revolution
@@ -81,8 +84,23 @@ public class MecanumDrivebase extends SubsystemBase {
         // 2 given inputs drive the robot
         thisDriveSpeedx = driveSpeedx * invert;
         thisDriveSpeedy = driveSpeedy * -invert;
-        thisTurnspeed = turnSpeed;
-        _robotDrive.driveCartesian(thisDriveSpeedx, thisDriveSpeedy, thisTurnspeed, new Rotation2d(-gyro.getYaw())); // UPDATE: field centric drive is now working. this actually takes 4 values, x speed, y speed, turns speed, and the gyro angle, potentially for field centric driving!
+        if (turnSpeed > 0) {
+          thisTurnspeed =  turnSpeed * turnSpeed * invert;
+        } else if (turnSpeed < 0) {
+          thisTurnspeed = -1 * turnSpeed * turnSpeed * invert;
+        } else {
+          thisTurnspeed = 0;
+        }
+        SmartDashboard.putNumber("TurnSpeed", thisTurnspeed);
+        _robotDrive.driveCartesian(thisDriveSpeedx, thisDriveSpeedy, thisTurnspeed, rotation.fromDegrees(-gyro.getYaw())); // UPDATE: field centric drive is now working. this actually takes 4 values, x speed, y speed, turns speed, and the gyro angle, potentially for field centric driving!
+    }
+
+    public void goTo(double speedX, double speedY, double heading) {
+      _robotDrive.driveCartesian(speedX, speedY, heading);
+    }
+
+    public void smartDrive(double speedX, double speedY, double PIDoutput) {
+      _robotDrive.driveCartesian(speedX, speedY, PIDoutput, rotation.fromDegrees(-gyro.getYaw()));
     }
     
     public void invertDrive() {

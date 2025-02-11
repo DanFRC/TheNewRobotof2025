@@ -9,8 +9,6 @@ public class InvertCmd extends Command {
 
   public InvertCmd(MecanumDrivebase subsystem) {
     m_subsystem = subsystem;
-
-    addRequirements(subsystem);
   }
 
   @Override

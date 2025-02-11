@@ -12,7 +12,6 @@ public class ResetGyroCmd extends Command {
   public ResetGyroCmd(MecanumDrivebase subsystem) {
     m_subsystem = subsystem;
 
-    addRequirements(subsystem);
   }
 
   @Override
