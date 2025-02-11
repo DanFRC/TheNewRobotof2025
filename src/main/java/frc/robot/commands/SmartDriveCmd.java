@@ -18,7 +18,6 @@ public class SmartDriveCmd extends Command {
   private Joystick thisbuttonControls;
   private double driveSpeedx = 0;
   private double driveSpeedy = 0;
-  private double turnSpeed = 0;
 
   private double degree = 0;
 
@@ -36,6 +35,7 @@ public class SmartDriveCmd extends Command {
   @Override
   public void initialize() {
     turnPID.reset();
+    _drivebase.zeroGyro();
   }
 
   public static double wrapAngle(double angle) {

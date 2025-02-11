@@ -64,19 +64,19 @@ public class GotoReef extends Command {
         heading = 0;
         calculatePIDMovement(heading);
       } else if (_camera.getTagID() == 19 || _camera.getTagID() == 6) {
-        heading = 45;
+        heading = 60;
         calculatePIDMovement(heading);
       } else if (_camera.getTagID() == 20 || _camera.getTagID() == 11) {
-        heading = 135;
+        heading = 120;
         calculatePIDMovement(heading);
       } else if (_camera.getTagID() == 21 || _camera.getTagID() == 10) {
         heading = 180;
         calculatePIDMovement(heading);
       } else if (_camera.getTagID() == 22 || _camera.getTagID() == 9) {
-        heading = -135;
+        heading = -120;
         calculatePIDMovement(heading);
       } else if (_camera.getTagID() == 17|| _camera.getTagID() == 8) {
-        heading = -45;
+        heading = -60;
         calculatePIDMovement(heading);
       }
     }
