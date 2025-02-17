@@ -4,6 +4,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class SetElevatorPos extends Command {
@@ -11,40 +14,35 @@ public class SetElevatorPos extends Command {
   private final ElevatorSubsystem _elevator;
   private final PIDController elevatorPID;
   private final SlewRateLimiter elevatorSpeedLimiter;
+  private final CommandJoystick _joy;
 
   // VARS
-  private double encoderPos;
   private String LEVEL;
 
-  // Encoder Limits
-  private double LOWERMAX = 0.05; // Please adjust these values!!!!! I HAVE NOT TUNED IT!!!
-  private double UPPERMAX = 0.7; // Adjust this aswell!
-
-  private double kP = 0.1;
-  private double kI = 0.1;
-  private double kD = 0.1;
+  private double kP = 0.06;
+  private double kI = 0.06;
+  private double kD = 0;
 
   private double speedLimit = 1;
 
   // Completes command once the elevator's encoder reads this point or less!
-  private double EndDeadZone = 0.4;
 
   private double error;
-
+  private double goalPos;
   private double output;
 
   // POSITIONS
-  // THESE POSITIIONS ARE FOR THE REV THROUGH BORE ((ABSOLUTE) VERSION OF THE) ENCODER
-  // GIVES VALUES IN USUALLY SMALLER NUMBERS
-  private double LOWGOAL = 3 / 10;
-  private double LOWREEF = 35 / 10;
-  private double MIDREEF = 4 / 10;
-  private double HIGHREEF = 5 / 10;
-  private double NEUTRAL = 1 / 10;
+  // THESE POSITIIONS ARE FOR THE REV THROUGH BORE RELATIVE VERSION OF THE ENCODER
+  private double LOWGOAL = ElevatorConstants.kElevatorDropper;
+  private double LOWREEF = ElevatorConstants.kElevatorLow;
+  private double MIDREEF = ElevatorConstants.kElevatorMid;
+  private double HIGHREEF = ElevatorConstants.kElevatorDeadZoneMax;
+  private double NEUTRAL = ElevatorConstants.kElevatorNeutral;
 
-  public SetElevatorPos(ElevatorSubsystem subsystem, String ReefLevel) {
+  public SetElevatorPos(ElevatorSubsystem subsystem, String ReefLevel, CommandJoystick driverContrller) {
     _elevator = subsystem;
     LEVEL = ReefLevel;
+    _joy = driverContrller;
 
     this.elevatorPID = new PIDController(kP, kI, kD);
     this.elevatorSpeedLimiter = new SlewRateLimiter(speedLimit);
@@ -58,11 +56,11 @@ public class SetElevatorPos extends Command {
   public void initialize() {
     output = 0;
     elevatorPID.reset();
-    elevatorPID.setIZone(7.5);
+
+    goalPos = NEUTRAL;
   }
 
   private void setElevator(String GOAL) {
-    double goalPos;
 
     if (GOAL == "Low Goal") {
       goalPos = LOWGOAL;
@@ -78,20 +76,22 @@ public class SetElevatorPos extends Command {
       goalPos = 0;
       return;
     }
-    error = goalPos - encoderPos;
+    error = _elevator.getEncoder() - goalPos;
     elevatorPID.setSetpoint(goalPos);
-    output = elevatorSpeedLimiter.calculate(elevatorPID.calculate(encoderPos * elevatorPID.calculate(encoderPos)));
+    output = elevatorSpeedLimiter.calculate(error);
 
     // This if statement wraps the encoder positions between the 2 values
-    if (encoderPos > LOWERMAX && encoderPos < UPPERMAX) {
-      _elevator.driveElevator(output);
-    }
+    //if () {
+      _elevator.driveElevator(-output);
+      SmartDashboard.putNumber("ElevatorPID", output);
+      SmartDashboard.putNumber("Elevator Error", error);
+    //}
   }
 
   @Override
   public void execute() {
     // Public function inside the Elevator Subsystem
-    encoderPos = _elevator.getEncoder();
+    SmartDashboard.putString("ElevatorLevel", LEVEL);
 
     if (LEVEL == "Low Goal") {
       // GO TO LOWGOAL
@@ -117,10 +117,6 @@ public class SetElevatorPos extends Command {
 
   @Override
   public boolean isFinished() {
-    if (error <= EndDeadZone) {
-      return true;
-    } else {
-      return false;
-    }
+    return false;
   }
 }

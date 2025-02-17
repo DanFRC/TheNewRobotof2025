@@ -83,13 +83,7 @@ public class MecanumDrivebase extends SubsystemBase {
         // 2 given inputs drive the robot
         thisDriveSpeedx = driveSpeedx * invert;
         thisDriveSpeedy = driveSpeedy * -invert;
-        if (turnSpeed > 0) {
-          thisTurnspeed =  turnSpeed * turnSpeed * invert;
-        } else if (turnSpeed < 0) {
-          thisTurnspeed = -1 * turnSpeed * turnSpeed * invert;
-        } else {
-          thisTurnspeed = 0;
-        }
+
         SmartDashboard.putNumber("TurnSpeed", thisTurnspeed);
         _robotDrive.driveCartesian(thisDriveSpeedx, thisDriveSpeedy, thisTurnspeed, rotation.fromDegrees(-gyro.getYaw())); // UPDATE: field centric drive is now working. this actually takes 4 values, x speed, y speed, turns speed, and the gyro angle, potentially for field centric driving!
     }
@@ -98,7 +92,14 @@ public class MecanumDrivebase extends SubsystemBase {
       _robotDrive.driveCartesian(speedX, speedY, heading);
     }
 
-    public void smartDrive(double speedX, double speedY, double PIDoutput) {
+    public void smartDrive(double speedX, double speedY, double PIDoutput, boolean AUTOTurning) {
+
+      if (PIDoutput > 0 && AUTOTurning == false) {
+        PIDoutput *= PIDoutput * invert;
+      } else if (PIDoutput < 0 && AUTOTurning == false) {
+        PIDoutput *= -1 * PIDoutput * invert;
+      }
+
       _robotDrive.driveCartesian(speedX, speedY, PIDoutput, rotation.fromDegrees(-gyro.getYaw()));
     }
     

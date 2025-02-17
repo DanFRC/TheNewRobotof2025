@@ -28,22 +28,24 @@ public class SmartDriveCmd extends Command {
     thisController = controller;
     this.thisbuttonControls = buttonControls;
 
-    turnPID = new PIDController(.01, 0.01, 0.1);
+    turnPID = new PIDController(.025, 0.0125, 0.1);
     addRequirements(drivebase);
   }
 
   @Override
   public void initialize() {
     turnPID.reset();
+    turnPID.setIZone(.4);
     _drivebase.zeroGyro();
+    additiveTurn = _drivebase.getGyroYaw();
   }
 
   public static double wrapAngle(double angle) {
-    angle = angle % 360; // Keep within -360 to 360
+    angle = angle % 360;
     if (angle > 180) {
-        angle -= 360; // Shift down to -180 to 180
+        angle -= 360;
     } else if (angle < -180) {
-        angle += 360; // Shift up to -180 to 180
+        angle += 360;
     }
     return angle;
 }
@@ -53,28 +55,31 @@ public class SmartDriveCmd extends Command {
 
   @Override
   public void execute() {
-    driveSpeedy = thisController.getY();
-    driveSpeedx = thisController.getX();
-
-    if (thisbuttonControls.getRawButton(1) == true) {
-      additiveTurn = 54;
-    } else {
-      double twist = thisController.getTwist();
-      additiveTurn += twist * (2.5 + Math.abs(twist));
+    SmartDashboard.putNumber("GetThrottle", thisController.getThrottle());
+    if (thisController.getThrottle() == -1) {
+      driveSpeedy = thisController.getY();
+      driveSpeedx = thisController.getX();
+  
+      if (thisbuttonControls.getRawButton(1) == true) {
+        additiveTurn = 54;
+        _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, output, true);
+      } else {
+        _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, thisController.getTwist() , false);
+      }
+      
+      degree = wrapAngle(additiveTurn);
+  
+      eror = wrapAngle(-_drivebase.getGyroYaw() - degree);
+      turnPID.setSetpoint(degree);
+      output = -turnPID.calculate(eror);
+      SmartDashboard.putNumber("Eror", eror);
+      // Takes in four values, x speed, y speed, turns speed, and a Gyro Ange.
+      
     }
-    
-    degree = wrapAngle(additiveTurn);
-
-    eror = _drivebase.getGyroYaw() - degree;
-    turnPID.setSetpoint(degree);
-    output = -turnPID.calculate(eror);
-    SmartDashboard.putNumber("Eror", eror);
-    // Takes in four values, x speed, y speed, turns speed, and a Gyro Ange.
-    _drivebase.smartDrive(driveSpeedx, driveSpeedy, output);
 
     SmartDashboard.putNumber("ControllerX", driveSpeedx);
     SmartDashboard.putNumber("ControllerY", driveSpeedy);
-    SmartDashboard.putNumber("Gyro!!", _drivebase.getGyroYaw());
+    SmartDashboard.putNumber("Gyro!!", -_drivebase.getGyroYaw());
     SmartDashboard.putNumber("Needed Degree", degree);
     SmartDashboard.putNumber("Turn Output", output);
   }

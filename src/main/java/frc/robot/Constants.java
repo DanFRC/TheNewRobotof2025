@@ -20,7 +20,25 @@ public final class Constants {
 
   public static class ElevatorConstants {
     public static final int kElevatorMotorPort = 4;
-    public static final int kEncoderPort = 3;
+    public static final int kENC_A = 0;
+    public static final int kENC_B = 1;
+
+    public static final double kElevatorDeadZoneMax = 0.1493;
+    public static final double kElevatorDeadZoneMin = 0.0273;
+
+    public static final double kElevatorMid = 0.1000;
+    public static final double kElevatorLow = 0.0800;
+    public static final double kElevatorDropper = 0.0350;
+
+    public static final double kElevatorNeutral = 0.0800;
+  }
+
+  public static class ArmPivotConstants {
+    public static final int kArmPivotMotorPort = 3;
+    public static final int kEncoderPort = 2;
+
+    public static final double kArmPivotDeadZoneMax = 0.1638;
+    public static final double kArmPivotDeadZoneMin = 0.6777;
   }
 
   public static class ButtonBoxConstants {

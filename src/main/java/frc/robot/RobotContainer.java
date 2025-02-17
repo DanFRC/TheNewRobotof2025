@@ -5,13 +5,19 @@
 package frc.robot;
 
 import frc.robot.Constants.ButtonBoxConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArcadeDriveMecanum;
+import frc.robot.commands.DriveArmPivot;
+import frc.robot.commands.DriveElevator;
 //import frc.robot.commands.Autos;
 import frc.robot.commands.InvertCmd;
 import frc.robot.commands.ResetGyroCmd;
+import frc.robot.commands.SetElevatorPos;
 import frc.robot.commands.SmartDriveCmd;
 import frc.robot.commands.DrivebaseCommands.GotoReef;
+import frc.robot.subsystems.ArmPivotSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.MecanumDrivebase;
 import edu.wpi.first.wpilibj.Joystick;
@@ -29,6 +35,15 @@ public class RobotContainer {
   private final CommandJoystick _driverController =
       new CommandJoystick(OperatorConstants.kDriverControllerPort);
 
+  private final ElevatorSubsystem _elevator = 
+      new ElevatorSubsystem();
+
+  private final ArmPivotSubsystem _ArmPivotSubsystem = 
+      new ArmPivotSubsystem();
+
+  private final CommandXboxController _manualSubsystemController = 
+      new CommandXboxController(1);
+
   private final Joystick _driverButtonControls = 
       new Joystick(OperatorConstants.kDriverControllerPort);
   private final MecanumDrivebase _drivebase = new MecanumDrivebase();
@@ -41,16 +56,23 @@ public class RobotContainer {
     configureBindings();
 
     _drivebase.setDefaultCommand(new SmartDriveCmd(_drivebase, _driverController, _driverButtonControls));
+    _elevator.setDefaultCommand(new DriveElevator(_elevator, _manualSubsystemController));
+    _ArmPivotSubsystem.setDefaultCommand(new DriveArmPivot(_ArmPivotSubsystem, _manualSubsystemController));
   }
 
   private void configureBindings() {
 
-    _driverController.button(3).whileTrue(new ParallelCommandGroup(new InvertCmd(_drivebase)));
-    _driverController.button(2).whileTrue(new ParallelCommandGroup(new ResetGyroCmd(_drivebase)));
+    _driverController.button(3).onTrue(new ParallelCommandGroup(new InvertCmd(_drivebase)));
+    _driverController.button(2).onTrue(new ParallelCommandGroup(new ResetGyroCmd(_drivebase)));
 
-    _buttonBox.button(ButtonBoxConstants.kL3_L_Button).whileTrue(new ParallelCommandGroup( 
-      new GotoReef(_drivebase, _cameraObject, "L3_L")
+    _driverController.button(1).whileTrue(new GotoReef(_drivebase, _cameraObject, "High Goal"));
+
+      _buttonBox.button(ButtonBoxConstants.kL4_L_Button).onTrue(new ParallelCommandGroup( 
+        new SetElevatorPos(_elevator, "High Reef", _driverController)
     ));
+
+    _buttonBox.button(ButtonBoxConstants.kALG_23).onTrue(new ParallelCommandGroup(new SetElevatorPos(_elevator, "Tune", _driverController)));
+    
   }
 
   public Command getAutonomousCommand() {
