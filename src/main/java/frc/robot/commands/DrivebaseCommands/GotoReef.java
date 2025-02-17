@@ -1,5 +1,6 @@
 package frc.robot.commands.DrivebaseCommands;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.MecanumDrivebase;
 import edu.wpi.first.math.controller.PIDController;
@@ -13,14 +14,6 @@ public class GotoReef extends Command {
   private PIDController drivePID;
   private PIDController turnPID;
 
-  private double kP = .01;
-  private double kI = .01;
-  private double kD = .1;
-
-  private double kP2 = .01;
-  private double kI2 = .01;
-  private double kD2 = .1;
-
   private double heading;
   private double calculatedTurnSpeed;
   private double turnError;
@@ -31,8 +24,8 @@ public class GotoReef extends Command {
   public GotoReef(MecanumDrivebase subsystem, FrontFacingCameraSubsystem camera, String level) {
     _drivebase = subsystem;
     _camera = camera;
-    drivePID = new PIDController(kP, kI, kD);
-    turnPID = new PIDController(kP2, kI2, kD2);
+    turnPID = new PIDController(Constants.DrivebaseContants.turnP, Constants.DrivebaseContants.turnI, Constants.DrivebaseContants.turnD);
+    drivePID = new PIDController(Constants.DrivebaseContants.driveP, Constants.DrivebaseContants.driveI, Constants.DrivebaseContants.driveD);
     this.level = level;
 
     addRequirements(subsystem);

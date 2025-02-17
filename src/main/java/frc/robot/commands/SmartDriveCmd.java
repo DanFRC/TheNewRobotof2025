@@ -1,17 +1,24 @@
 package frc.robot.commands;
 
+import frc.robot.Constants;
+import frc.robot.subsystems.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.MecanumDrivebase;
+import frc.robot.subsystems.RearFacingCamera;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
 public class SmartDriveCmd extends Command {
 
   private final MecanumDrivebase _drivebase;
   private final PIDController turnPID;
+  private final PIDController drivePID;
+  private final RearFacingCamera _camera;
+  private final FrontFacingCameraSubsystem _wrong_camera;
 
   // Define stuff
   private CommandJoystick thisController;
@@ -23,12 +30,15 @@ public class SmartDriveCmd extends Command {
 
   private double additiveTurn = 0;
 
-  public SmartDriveCmd(MecanumDrivebase drivebase, CommandJoystick controller, Joystick buttonControls) {
+  public SmartDriveCmd(MecanumDrivebase drivebase, CommandJoystick controller, Joystick buttonControls, RearFacingCamera camera, FrontFacingCameraSubsystem wrong_camera) {
     _drivebase = drivebase;
     thisController = controller;
     this.thisbuttonControls = buttonControls;
+    this._camera = camera;
+    this._wrong_camera = wrong_camera;
 
-    turnPID = new PIDController(.025, 0.0125, 0.1);
+    turnPID = new PIDController(Constants.DrivebaseContants.turnP, Constants.DrivebaseContants.turnI, Constants.DrivebaseContants.turnD);
+    drivePID = new PIDController(Constants.DrivebaseContants.driveP, Constants.DrivebaseContants.driveI, Constants.DrivebaseContants.driveD);
     addRequirements(drivebase);
   }
 
@@ -59,10 +69,59 @@ public class SmartDriveCmd extends Command {
     if (thisController.getThrottle() == -1) {
       driveSpeedy = thisController.getY();
       driveSpeedx = thisController.getX();
+
+      SmartDashboard.putNumber("ControllerX", driveSpeedx);
+      SmartDashboard.putNumber("ControllerY", driveSpeedy);
+      SmartDashboard.putNumber("Gyro!!", -_drivebase.getGyroYaw());
+      SmartDashboard.putNumber("Needed Degree", degree);
+      SmartDashboard.putNumber("Turn Output", output);
+      SmartDashboard.putNumber("additiveTurn", additiveTurn);
+
+      // thisController.button(3).whileTrue(Commands.runOnce(() -> {
+      //   SmartDashboard.putNumber("Testie", 1);
+      //   additiveTurn = 54;
+      //   _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, output, true);
+      // }));
   
-      if (thisbuttonControls.getRawButton(1) == true) {
-        additiveTurn = 54;
-        _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, output, true);
+      if (thisbuttonControls.getRawButton(2) == true) {
+
+        if (_camera.getTagID() == 1 || _camera.getTagID() == 2 || _camera.getTagID() == 12 || _camera.getTagID() == 13) {
+
+          if (_camera.getDistanceToTag() < 1.5) {
+            additiveTurn = 54;
+          } else {
+            double turnError = _camera.getYDistanceFromTag();
+
+            additiveTurn = turnPID.calculate(turnError, 0);
+          }
+
+        } else {
+          additiveTurn = 54;
+        }
+
+        // Turns the robot around until the rear camera sees the target
+        if (_wrong_camera.getTagID() == 1 || _wrong_camera.getTagID() == 2 || _wrong_camera.getTagID() == 12 || _wrong_camera.getTagID() == 13) {
+          while (!(_camera.getTagID() == 1 || _camera.getTagID() == 2 || _camera.getTagID() == 12 || _camera.getTagID() == 13)) {
+            _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, 0.5, true);
+          }
+    }
+    
+
+        // moves the robot toward the target
+        if (_camera.getTagID() == 1 || _camera.getTagID() == 2 || _camera.getTagID() == 12 || _camera.getTagID() == 13) {
+          double Xoutput;
+          double Youtput;
+
+          double XdistanceError = _camera.getDistanceToTag() - Constants.AprilTagConstants.kCORAL_STATION_X;
+          double YdistanceError = _camera.getYDistanceFromTag() - Constants.AprilTagConstants.kCORAL_STATION_Y;
+
+          Xoutput = drivePID.calculate(XdistanceError, Constants.AprilTagConstants.kCORAL_STATION_X);
+          Youtput = drivePID.calculate(YdistanceError, Constants.AprilTagConstants.kCORAL_STATION_Y);
+
+          _drivebase.smartDrive(-Xoutput, -Youtput, output, true);
+        } else {
+          _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, output, true);
+        }
       } else {
         _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, thisController.getTwist() , false);
       }
@@ -76,12 +135,6 @@ public class SmartDriveCmd extends Command {
       // Takes in four values, x speed, y speed, turns speed, and a Gyro Ange.
       
     }
-
-    SmartDashboard.putNumber("ControllerX", driveSpeedx);
-    SmartDashboard.putNumber("ControllerY", driveSpeedy);
-    SmartDashboard.putNumber("Gyro!!", -_drivebase.getGyroYaw());
-    SmartDashboard.putNumber("Needed Degree", degree);
-    SmartDashboard.putNumber("Turn Output", output);
   }
 
   @Override

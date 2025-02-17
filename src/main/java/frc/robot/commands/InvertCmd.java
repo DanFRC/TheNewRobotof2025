@@ -13,7 +13,6 @@ public class InvertCmd extends Command {
 
   @Override
   public void initialize() {
-    m_subsystem.invertDrive();
   }
 
   @Override

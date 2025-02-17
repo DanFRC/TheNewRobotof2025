@@ -31,8 +31,6 @@ public class MecanumDrivebase extends SubsystemBase {
   private double thisDriveSpeedy = 0;
   private double thisTurnspeed = 0;
 
-  // Probably won't need this because mecanum drive is field oriented using the NavX
-  private double invert = 1;
 
   //private final AHRS _gyro = new AHRS(NavXComType.kMXP_SPI);
   private final MecanumDrive _robotDrive;
@@ -81,8 +79,8 @@ public class MecanumDrivebase extends SubsystemBase {
 
         
         // 2 given inputs drive the robot
-        thisDriveSpeedx = driveSpeedx * invert;
-        thisDriveSpeedy = driveSpeedy * -invert;
+        thisDriveSpeedx = driveSpeedx;
+        thisDriveSpeedy = driveSpeedy;
 
         SmartDashboard.putNumber("TurnSpeed", thisTurnspeed);
         _robotDrive.driveCartesian(thisDriveSpeedx, thisDriveSpeedy, thisTurnspeed, rotation.fromDegrees(-gyro.getYaw())); // UPDATE: field centric drive is now working. this actually takes 4 values, x speed, y speed, turns speed, and the gyro angle, potentially for field centric driving!
@@ -95,17 +93,13 @@ public class MecanumDrivebase extends SubsystemBase {
     public void smartDrive(double speedX, double speedY, double PIDoutput, boolean AUTOTurning) {
 
       if (PIDoutput > 0 && AUTOTurning == false) {
-        PIDoutput *= PIDoutput * invert;
+        PIDoutput *= PIDoutput;
+        _robotDrive.driveCartesian(speedX, speedY, PIDoutput, rotation.fromDegrees(-gyro.getYaw()));
       } else if (PIDoutput < 0 && AUTOTurning == false) {
-        PIDoutput *= -1 * PIDoutput * invert;
+        PIDoutput *= -1 * PIDoutput;
+        _robotDrive.driveCartesian(speedX, speedY, PIDoutput);
       }
 
-      _robotDrive.driveCartesian(speedX, speedY, PIDoutput, rotation.fromDegrees(-gyro.getYaw()));
-    }
-    
-    public void invertDrive() {
-        // Invert the drive
-        invert *= -1;
     }
 
     public void zeroGyro() {
@@ -125,10 +119,6 @@ public class MecanumDrivebase extends SubsystemBase {
 
               // Individual speesd
         // This method will be called once per scheduler run
-        if (invert == 1) {
-            SmartDashboard.putBoolean("Inverted", false);
-        } else
-        SmartDashboard.putBoolean("Inverted", true);
 
             // print stuff to the dashboard
         // SmartDashboard.putNumber("Drive Speed", finalDriveSpeed);

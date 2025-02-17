@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.ButtonBoxConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AUTO_DriveSeconds;
 import frc.robot.commands.ArcadeDriveMecanum;
 import frc.robot.commands.DriveArmPivot;
 import frc.robot.commands.DriveElevator;
@@ -20,9 +21,12 @@ import frc.robot.subsystems.ArmPivotSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.MecanumDrivebase;
+import frc.robot.subsystems.RearFacingCamera;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 //import edu.wpi.first.wpilibj2.command.button.Trigger; // Useful later but not as of 29.01.25
@@ -31,6 +35,7 @@ public class RobotContainer {
 
   // Define Subsystems
   private final FrontFacingCameraSubsystem _cameraObject = new FrontFacingCameraSubsystem();
+  private final RearFacingCamera _rearCameraObject = new RearFacingCamera();
 
   private final CommandJoystick _driverController =
       new CommandJoystick(OperatorConstants.kDriverControllerPort);
@@ -49,21 +54,16 @@ public class RobotContainer {
   private final MecanumDrivebase _drivebase = new MecanumDrivebase();
   private final CommandJoystick _buttonBox = new CommandJoystick(2);
 
-  // Define Commands
-  private final ArcadeDriveMecanum arcadeDriveCmd = new ArcadeDriveMecanum(_drivebase, _driverController);
-
   public RobotContainer() {
     configureBindings();
 
-    _drivebase.setDefaultCommand(new SmartDriveCmd(_drivebase, _driverController, _driverButtonControls));
+    _drivebase.setDefaultCommand(new SmartDriveCmd(_drivebase, _driverController, _driverButtonControls, _rearCameraObject, _cameraObject));
     _elevator.setDefaultCommand(new DriveElevator(_elevator, _manualSubsystemController));
     _ArmPivotSubsystem.setDefaultCommand(new DriveArmPivot(_ArmPivotSubsystem, _manualSubsystemController));
   }
 
   private void configureBindings() {
-
-    _driverController.button(3).onTrue(new ParallelCommandGroup(new InvertCmd(_drivebase)));
-    _driverController.button(2).onTrue(new ParallelCommandGroup(new ResetGyroCmd(_drivebase)));
+    _driverController.button(3).onTrue(new ParallelCommandGroup(new ResetGyroCmd(_drivebase)));
 
     _driverController.button(1).whileTrue(new GotoReef(_drivebase, _cameraObject, "High Goal"));
 
@@ -76,7 +76,8 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return null;
-    //return Autos.exampleAuto(m_exampleSubsystem);
-  }
+    return new SequentialCommandGroup(
+      new AUTO_DriveSeconds(_drivebase, _cameraObject, _rearCameraObject, 1, 0.3, 0, 0, "DDRIVE")
+    );
+}
 }
