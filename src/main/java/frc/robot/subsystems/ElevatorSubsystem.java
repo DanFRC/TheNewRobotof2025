@@ -20,7 +20,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void driveElevator(double speed) {
-        _liftMotor.set(ControlMode.PercentOutput, speed);
+        _liftMotor.set(ControlMode.PercentOutput, -speed);
     }
 
     public double getEncoder() {

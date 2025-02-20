@@ -71,7 +71,7 @@ public class RobotContainer {
         new SetElevatorPos(_elevator, "High Reef", _driverController)
     ));
 
-    _buttonBox.button(ButtonBoxConstants.kALG_23).onTrue(new ParallelCommandGroup(new SetElevatorPos(_elevator, "Tune", _driverController)));
+    _buttonBox.button(ButtonBoxConstants.kALG_23).onTrue(new ParallelCommandGroup(new SetElevatorPos(_elevator, "Neutral", _driverController)));
     
   }
 

@@ -78,11 +78,11 @@ public class SetElevatorPos extends Command {
     }
     error = _elevator.getEncoder() - goalPos;
     elevatorPID.setSetpoint(goalPos);
-    output = elevatorSpeedLimiter.calculate(error);
+    output = elevatorPID.calculate(error);
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
-      _elevator.driveElevator(-output);
+      _elevator.driveElevator(output);
       SmartDashboard.putNumber("ElevatorPID", output);
       SmartDashboard.putNumber("Elevator Error", error);
     //}

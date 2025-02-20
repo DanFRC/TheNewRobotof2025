@@ -31,14 +31,14 @@ public final class Constants {
     public static final int kENC_A = 0;
     public static final int kENC_B = 1;
 
-    public static final double kElevatorDeadZoneMax = 0.1493;
-    public static final double kElevatorDeadZoneMin = 0.0273;
+    public static final double kElevatorDeadZoneMax = 16000;
+    public static final double kElevatorDeadZoneMin = 0;
 
-    public static final double kElevatorMid = 0.1000;
-    public static final double kElevatorLow = 0.0800;
-    public static final double kElevatorDropper = 0.0350;
+    public static final double kElevatorMid = 8400;
+    public static final double kElevatorLow = 4000;
+    public static final double kElevatorDropper = 2500;
 
-    public static final double kElevatorNeutral = 0.0800;
+    public static final double kElevatorNeutral = 8400;
   }
 
   public static class ArmPivotConstants {
