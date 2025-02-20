@@ -27,7 +27,7 @@ public class DriveElevator extends Command {
 
   @Override
   public void execute() {
-    _elevator.driveElevator(LEVEL.getRightY());
+    _elevator.driveElevator(-LEVEL.getRightY());
    }
 
   @Override

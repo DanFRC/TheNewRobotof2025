@@ -82,7 +82,7 @@ public class SetElevatorPos extends Command {
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
-      _elevator.driveElevator(-output);
+      _elevator.driveElevator(output);
       SmartDashboard.putNumber("ElevatorPID", output);
       SmartDashboard.putNumber("Elevator Error", error);
       SmartDashboard.putNumber("GOAL", goalPos);

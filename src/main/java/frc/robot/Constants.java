@@ -32,11 +32,19 @@ public final class Constants {
     public static final int kENC_B = 9;
 
     public static final double kElevatorDeadZoneMax = 16000;
+<<<<<<< HEAD
     public static final double kElevatorDeadZoneMin = 10;
 
     public static final double kElevatorMid = 8400;
     public static final double kElevatorLow = 4000;
     public static final double kElevatorDropper = 4000;
+=======
+    public static final double kElevatorDeadZoneMin = 0;
+
+    public static final double kElevatorMid = 8400;
+    public static final double kElevatorLow = 4000;
+    public static final double kElevatorDropper = 2500;
+>>>>>>> 2d0e163d9a0cb0abdebdad4cae7f965683df2126
 
     public static final double kElevatorNeutral = 8400;
   }
