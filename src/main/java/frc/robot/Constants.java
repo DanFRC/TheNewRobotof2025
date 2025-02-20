@@ -18,12 +18,12 @@ public final class Constants {
     public static final int kGyroPort = 7;
 
     public static double turnP = 0.025;
-    public static double turnI = 0.0125;
-    public static double turnD = 0.075;
+    public static double turnI = 0.005;
+    public static double turnD = 0.005;
 
     public static double driveP = 0.025;
-    public static double driveI = 0.0125;
-    public static double driveD = 0.075;
+    public static double driveI = 0.005;
+    public static double driveD = 0.005;
   }
 
   public static class ElevatorConstants {
@@ -47,6 +47,11 @@ public final class Constants {
 
     public static final double kArmPivotDeadZoneMax = 0.1638;
     public static final double kArmPivotDeadZoneMin = 0.6777;
+
+    public static final double kArmPivotMid = 0.35;
+    public static final double kArmPivotLow = 0.32;
+    public static final double kArmPivotDropper = 0.2;
+    public static final double kArmPivotHigh = 0.48;
   }
 
   public static class ButtonBoxConstants {

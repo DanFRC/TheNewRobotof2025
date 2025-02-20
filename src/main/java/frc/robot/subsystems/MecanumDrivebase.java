@@ -49,7 +49,7 @@ public class MecanumDrivebase extends SubsystemBase {
 //   );
 
   public double getGyroYaw() {
-    return gyro.getYaw();
+    return -gyro.getYaw();
     }
 
   public String getReefSide() {

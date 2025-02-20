@@ -58,7 +58,7 @@ public class AUTO_DriveSeconds extends Command {
 
   private double calculatePIDMovement(double heading, String TP) {
     if (TP == "KEEP-HEADING") {
-      double turnError = -_drivebase.getGyroYaw() - heading;
+      double turnError = _drivebase.getGyroYaw() - heading;
       double output = turnPID.calculate(turnError, heading);
       return output;
     } else {

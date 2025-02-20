@@ -65,8 +65,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     _driverController.button(3).onTrue(new ParallelCommandGroup(new ResetGyroCmd(_drivebase)));
-
-    _driverController.button(1).whileTrue(new GotoReef(_drivebase, _cameraObject, "High Goal"));
+    _driverController.button(1).whileTrue(new GotoReef(_drivebase, _cameraObject, _driverController));
 
       _buttonBox.button(ButtonBoxConstants.kL4_L_Button).onTrue(new ParallelCommandGroup( 
         new SetElevatorPos(_elevator, "High Reef", _driverController),

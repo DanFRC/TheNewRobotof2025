@@ -62,6 +62,8 @@ public class SmartDriveCmd extends Command {
   private double output = 0;
   private double eror = 0;
 
+  private double onCrack = 0;
+
   @Override
   public void execute() {
     SmartDashboard.putNumber("GetThrottle", thisController.getThrottle());
@@ -71,7 +73,7 @@ public class SmartDriveCmd extends Command {
 
       SmartDashboard.putNumber("ControllerX", driveSpeedx);
       SmartDashboard.putNumber("ControllerY", driveSpeedy);
-      SmartDashboard.putNumber("Gyro!!", -_drivebase.getGyroYaw());
+      SmartDashboard.putNumber("Gyro!!", _drivebase.getGyroYaw());
       SmartDashboard.putNumber("Needed Degree", degree);
       SmartDashboard.putNumber("Turn Output", output);
       SmartDashboard.putNumber("additiveTurn", additiveTurn);
@@ -87,8 +89,10 @@ public class SmartDriveCmd extends Command {
         if (_camera.getTagID() == 1 || _camera.getTagID() == 2 || _camera.getTagID() == 12 || _camera.getTagID() == 13) {
 
           if (_camera.getDistanceToTag() < 1.5) {
+            onCrack = 1;
             additiveTurn = 54;
           } else {
+            onCrack = 0;
             double turnError = _camera.getYDistanceFromTag();
 
             additiveTurn = turnPID.calculate(turnError, 0);
@@ -117,9 +121,18 @@ public class SmartDriveCmd extends Command {
           Xoutput = drivePID.calculate(XdistanceError, Constants.AprilTagConstants.kCORAL_STATION_X);
           Youtput = drivePID.calculate(YdistanceError, Constants.AprilTagConstants.kCORAL_STATION_Y);
 
-          _drivebase.smartDrive(-Xoutput, -Youtput, output, true);
+          if (onCrack == 1) {
+            _drivebase.drive(-Xoutput, -Youtput, output);
+          } else {
+            _drivebase.drive(-Xoutput, -Youtput, additiveTurn);
+          }
+          
         } else {
-          _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, output, true);
+          if (onCrack == 1) {
+            _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, output, true);
+          } else {
+            _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, additiveTurn, true);
+          }
         }
       } else {
         _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, thisController.getTwist() , false);
@@ -127,7 +140,7 @@ public class SmartDriveCmd extends Command {
       
       degree = wrapAngle(additiveTurn);
   
-      eror = wrapAngle(-_drivebase.getGyroYaw() - degree);
+      eror = wrapAngle(_drivebase.getGyroYaw() - degree);
       turnPID.setSetpoint(degree);
       output = -turnPID.calculate(eror);
       SmartDashboard.putNumber("Eror", eror);
