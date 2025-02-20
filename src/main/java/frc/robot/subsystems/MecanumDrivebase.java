@@ -31,6 +31,8 @@ public class MecanumDrivebase extends SubsystemBase {
   private double thisDriveSpeedy = 0;
   private double thisTurnspeed = 0;
 
+  private String side = "left";
+
 
   //private final AHRS _gyro = new AHRS(NavXComType.kMXP_SPI);
   private final MecanumDrive _robotDrive;
@@ -49,6 +51,15 @@ public class MecanumDrivebase extends SubsystemBase {
   public double getGyroYaw() {
     return gyro.getYaw();
     }
+
+  public String getReefSide() {
+    return side;
+  }
+
+  public void setReefSide(String givenSide) {
+    if (givenSide == "left" || givenSide == "right" || givenSide == "Left" || givenSide == "Right")
+    this.side = givenSide.toLowerCase();
+  }
 
   // Define the drive base with 4 victor SPXs
   public MecanumDrivebase() {

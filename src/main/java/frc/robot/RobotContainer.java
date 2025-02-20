@@ -15,6 +15,7 @@ import frc.robot.commands.DriveElevator;
 import frc.robot.commands.InvertCmd;
 import frc.robot.commands.ResetGyroCmd;
 import frc.robot.commands.SetElevatorPos;
+import frc.robot.commands.SetGoalSide;
 import frc.robot.commands.SmartDriveCmd;
 import frc.robot.commands.DrivebaseCommands.GotoReef;
 import frc.robot.subsystems.ArmPivotSubsystem;
@@ -68,10 +69,39 @@ public class RobotContainer {
     _driverController.button(1).whileTrue(new GotoReef(_drivebase, _cameraObject, "High Goal"));
 
       _buttonBox.button(ButtonBoxConstants.kL4_L_Button).onTrue(new ParallelCommandGroup( 
-        new SetElevatorPos(_elevator, "High Reef", _driverController)
+        new SetElevatorPos(_elevator, "High Reef", _driverController),
+        new SetGoalSide(_drivebase, "left")
     ));
 
-    _buttonBox.button(ButtonBoxConstants.kALG_23).onTrue(new ParallelCommandGroup(new SetElevatorPos(_elevator, "Tune", _driverController)));
+    _buttonBox.button(ButtonBoxConstants.kL3_L_Button).onTrue(new ParallelCommandGroup(
+      new SetElevatorPos(_elevator, "Mid Reef", _driverController),
+      new SetGoalSide(_drivebase, "left")
+    ));
+
+    _buttonBox.button(ButtonBoxConstants.kL2_L_Button).onTrue(new ParallelCommandGroup(
+      new SetElevatorPos(_elevator, "Low Reef", _driverController),
+      new SetGoalSide(_drivebase, "left")
+    ));
+
+    
+    _buttonBox.button(ButtonBoxConstants.kL4_R_Button).onTrue(new ParallelCommandGroup( 
+      new SetElevatorPos(_elevator, "High Reef", _driverController),
+      new SetGoalSide(_drivebase, "right")
+  ));
+
+  _buttonBox.button(ButtonBoxConstants.kL3_R_Button).onTrue(new ParallelCommandGroup(
+    new SetElevatorPos(_elevator, "Mid Reef", _driverController),
+    new SetGoalSide(_drivebase, "right")
+  ));
+
+  _buttonBox.button(ButtonBoxConstants.kL2_R_Button).onTrue(new ParallelCommandGroup(
+    new SetElevatorPos(_elevator, "Low Reef", _driverController),
+    new SetGoalSide(_drivebase, "right")
+  ));
+
+
+
+    _buttonBox.button(ButtonBoxConstants.kALG_23).onTrue(new ParallelCommandGroup(new SetElevatorPos(_elevator, "Neutral", _driverController)));
     
   }
 

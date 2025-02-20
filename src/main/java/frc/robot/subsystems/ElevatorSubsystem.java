@@ -17,6 +17,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public ElevatorSubsystem() {
         // do smth once
+        _encoder.reset();
     }
 
     public void driveElevator(double speed) {

@@ -19,8 +19,8 @@ public class SetElevatorPos extends Command {
   // VARS
   private String LEVEL;
 
-  private double kP = 0.06;
-  private double kI = 0.06;
+  private double kP = 0.0001;
+  private double kI = 0;
   private double kD = 0;
 
   private double speedLimit = 1;
@@ -78,13 +78,14 @@ public class SetElevatorPos extends Command {
     }
     error = _elevator.getEncoder() - goalPos;
     elevatorPID.setSetpoint(goalPos);
-    output = elevatorSpeedLimiter.calculate(error);
+    output = elevatorPID.calculate(error);
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
       _elevator.driveElevator(-output);
       SmartDashboard.putNumber("ElevatorPID", output);
       SmartDashboard.putNumber("Elevator Error", error);
+      SmartDashboard.putNumber("GOAL", goalPos);
     //}
   }
 
@@ -105,11 +106,10 @@ public class SetElevatorPos extends Command {
     } else if (LEVEL == "High Reef") {
       // GO TO HIGHREEF
       setElevator(LEVEL);
-    }
-
-    // VISUALISATION
-    SmartDashboard.putNumber("Elevator Error", error);
-    SmartDashboard.putNumber("PID Calculated Output", output);
+    } else if (LEVEL == "Neutral") {
+      // GO TO NEUTRAL
+      setElevator(LEVEL);
+    } 
    }
 
   @Override
