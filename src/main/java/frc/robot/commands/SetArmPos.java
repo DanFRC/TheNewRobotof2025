@@ -21,9 +21,9 @@ public class SetArmPos extends Command {
   // VARS
   private String LEVEL;
 
-  private double kP = 0.0001;
-  private double kI = 0;
-  private double kD = 0;
+  private double kP = ArmPivotConstants.kP;
+  private double kI = ArmPivotConstants.kI;
+  private double kD = ArmPivotConstants.kD;
 
   private double speedLimit = 1;
 
@@ -79,12 +79,12 @@ public class SetArmPos extends Command {
       return;
     }
     error = _arm.getEncoder() - goalPos;
-    armPID.setSetpoint(goalPos);
-    output = armPID.calculate(error);
+    output = armPID.calculate(_arm.getEncoder(), goalPos);
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
-        _arm.driveArm(output);
+      _arm.driveArm(output);
+        
       SmartDashboard.putNumber("PIDARM", output);
       SmartDashboard.putNumber("ARM Error", error);
       SmartDashboard.putNumber("ARMGOAL", goalPos);

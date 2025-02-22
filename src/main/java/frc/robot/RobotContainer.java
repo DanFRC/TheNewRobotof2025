@@ -11,20 +11,29 @@ import frc.robot.commands.AUTO_DriveSeconds;
 import frc.robot.commands.ArcadeDriveMecanum;
 import frc.robot.commands.DriveArmPivot;
 import frc.robot.commands.DriveElevator;
+import frc.robot.commands.HomeElevator;
 //import frc.robot.commands.Autos;
 import frc.robot.commands.InvertCmd;
+import frc.robot.commands.ResetElevatorEncoder;
 import frc.robot.commands.ResetGyroCmd;
+import frc.robot.commands.SetArmPos;
 import frc.robot.commands.SetElevatorPos;
 import frc.robot.commands.SetGoalSide;
 import frc.robot.commands.SmartDriveCmd;
+import frc.robot.commands.TakeNoteCmd;
 import frc.robot.commands.DrivebaseCommands.GotoReef;
 import frc.robot.subsystems.ArmPivotSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.MecanumDrivebase;
 import frc.robot.subsystems.RearFacingCamera;
+
+import java.util.Set;
+
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -69,38 +78,51 @@ public class RobotContainer {
 
       _buttonBox.button(ButtonBoxConstants.kL4_L_Button).onTrue(new ParallelCommandGroup( 
         new SetElevatorPos(_elevator, "High Reef", _driverController),
+        new SetArmPos(_ArmPivotSubsystem, "High Reef", _driverController),
         new SetGoalSide(_drivebase, "left")
     ));
 
     _buttonBox.button(ButtonBoxConstants.kL3_L_Button).onTrue(new ParallelCommandGroup(
       new SetElevatorPos(_elevator, "Mid Reef", _driverController),
+      new SetArmPos(_ArmPivotSubsystem, "Mid Reef", _driverController),
       new SetGoalSide(_drivebase, "left")
     ));
 
     _buttonBox.button(ButtonBoxConstants.kL2_L_Button).onTrue(new ParallelCommandGroup(
       new SetElevatorPos(_elevator, "Low Reef", _driverController),
+      new SetArmPos(_ArmPivotSubsystem, "Low Reef", _driverController),
       new SetGoalSide(_drivebase, "left")
     ));
 
     
     _buttonBox.button(ButtonBoxConstants.kL4_R_Button).onTrue(new ParallelCommandGroup( 
       new SetElevatorPos(_elevator, "High Reef", _driverController),
+      new SetArmPos(_ArmPivotSubsystem, "High Reef", _driverController),
       new SetGoalSide(_drivebase, "right")
   ));
 
   _buttonBox.button(ButtonBoxConstants.kL3_R_Button).onTrue(new ParallelCommandGroup(
     new SetElevatorPos(_elevator, "Mid Reef", _driverController),
+    new SetArmPos(_ArmPivotSubsystem, "Mid Reef", _driverController),
     new SetGoalSide(_drivebase, "right")
   ));
 
   _buttonBox.button(ButtonBoxConstants.kL2_R_Button).onTrue(new ParallelCommandGroup(
     new SetElevatorPos(_elevator, "Low Reef", _driverController),
+    new SetArmPos(_ArmPivotSubsystem, "Low Reef", _driverController),
     new SetGoalSide(_drivebase, "right")
   ));
 
 
 
-    _buttonBox.button(ButtonBoxConstants.kALG_23).onTrue(new ParallelCommandGroup(new SetElevatorPos(_elevator, "Neutral", _driverController)));
+    _driverController.button(8).whileTrue(new SequentialCommandGroup(
+      new HomeElevator(_elevator, _ArmPivotSubsystem),
+      new SetElevatorPos(_elevator, "Neutral", _driverController)
+    ));
+    _driverController.button(3).onTrue(new SequentialCommandGroup(
+      new TakeNoteCmd(_elevator, _ArmPivotSubsystem),
+      new SetElevatorPos(_elevator, "Neutral", _driverController)
+    ));
     
   }
 

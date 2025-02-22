@@ -18,10 +18,11 @@ public class SetElevatorPos extends Command {
 
   // VARS
   private String LEVEL;
+  private double armHeading;
 
-  private double kP = 0.0001;
-  private double kI = 0;
-  private double kD = 0;
+  private double kP = ElevatorConstants.kP;
+  private double kI = ElevatorConstants.kI;
+  private double kD = ElevatorConstants.kD;
 
   private double speedLimit = 1;
 
@@ -38,6 +39,8 @@ public class SetElevatorPos extends Command {
   private double MIDREEF = ElevatorConstants.kElevatorMid;
   private double HIGHREEF = ElevatorConstants.kElevatorDeadZoneMax;
   private double NEUTRAL = ElevatorConstants.kElevatorNeutral;
+  private double NOTEUP = ElevatorConstants.kElevatorNoteUp;
+  private double NOTEDOWN = ElevatorConstants.kElevatorNoteDown;
 
   public SetElevatorPos(ElevatorSubsystem subsystem, String ReefLevel, CommandJoystick driverContrller) {
     _elevator = subsystem;
@@ -56,8 +59,7 @@ public class SetElevatorPos extends Command {
   public void initialize() {
     output = 0;
     elevatorPID.reset();
-
-    goalPos = NEUTRAL;
+    elevatorPID.setIZone(1050);
   }
 
   private void setElevator(String GOAL) {
@@ -72,20 +74,28 @@ public class SetElevatorPos extends Command {
       goalPos = HIGHREEF;
     } else if (GOAL == "Neutral") {
       goalPos = NEUTRAL;
+    } else if (GOAL == "Note Up") {
+      goalPos = NOTEUP;
+      if (elevatorPID.getError() < 50) {
+        Commands.runOnce(() -> {
+          goalPos = NOTEDOWN;
+          Commands.waitSeconds(.5);
+          goalPos = NOTEUP;
+        });
+      } else {
+        goalPos = NOTEUP;
+      }
+    } else if (GOAL == "Note Down") {
+      goalPos = NOTEDOWN;
     } else {
       goalPos = 0;
       return;
     }
-    error = _elevator.getEncoder() - goalPos;
-    elevatorPID.setSetpoint(goalPos);
-    output = elevatorPID.calculate(error);
+    output = elevatorPID.calculate(_elevator.getEncoder(), goalPos);
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
       _elevator.driveElevator(output);
-      SmartDashboard.putNumber("ElevatorPID", output);
-      SmartDashboard.putNumber("Elevator Error", error);
-      SmartDashboard.putNumber("GOAL", goalPos);
     //}
   }
 
@@ -93,6 +103,11 @@ public class SetElevatorPos extends Command {
   public void execute() {
     // Public function inside the Elevator Subsystem
     SmartDashboard.putString("ElevatorLevel", LEVEL);
+    SmartDashboard.putNumber("ElevatorPID", output);
+    SmartDashboard.putNumber("Elevator Error", error);
+    SmartDashboard.putNumber("GOAL", goalPos);
+    SmartDashboard.putNumber("Commanbd Elevator Reading", _elevator.getEncoder());
+    error = _elevator.getEncoder() - goalPos;
 
     if (LEVEL == "Low Goal") {
       // GO TO LOWGOAL
@@ -109,7 +124,13 @@ public class SetElevatorPos extends Command {
     } else if (LEVEL == "Neutral") {
       // GO TO NEUTRAL
       setElevator(LEVEL);
-    } 
+    } else if (LEVEL == "Note Up") {
+      // GO TO NEUTRAL
+      setElevator(LEVEL);
+    } else if (LEVEL == "Note Down") {
+      // GO TO NEUTRAL
+      setElevator(LEVEL);
+    }
    }
 
   @Override

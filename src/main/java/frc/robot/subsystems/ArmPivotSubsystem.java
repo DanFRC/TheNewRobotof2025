@@ -20,12 +20,16 @@ public class ArmPivotSubsystem extends SubsystemBase {
     }
 
     public void driveArm(double speed) {
-        if (_encoder.get() < ArmPivotConstants.kArmPivotDeadZoneMax && _encoder.get() > ArmPivotConstants.kArmPivotDeadZoneMin) {
+        SmartDashboard.putNumber("liftSpeed", speed);
+        if (speed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
+            _liftMotor.set(ControlMode.PercentOutput, speed);
+            SmartDashboard.putBoolean("Up", true);
+        } else if (speed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
             _liftMotor.set(ControlMode.PercentOutput, speed);
         } else {
             _liftMotor.set(ControlMode.PercentOutput, 0);
         }
-        _liftMotor.set(ControlMode.PercentOutput, speed);
+
     }
 
     public double getEncoder() {
