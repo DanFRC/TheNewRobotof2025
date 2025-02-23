@@ -1,15 +1,15 @@
-package frc.robot.commands;
+package frc.robot.commands.Sensors;
 
-import frc.robot.subsystems.MecanumDrivebase;
+import frc.robot.subsystems.DrivebaseSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class ResetGyroCmd extends Command {
+public class n_resetGyro extends Command {
 
-  private final MecanumDrivebase m_subsystem;
+  private final DrivebaseSubsystem m_subsystem;
 
   private boolean db = false;
 
-  public ResetGyroCmd(MecanumDrivebase subsystem) {
+  public n_resetGyro(DrivebaseSubsystem subsystem) {
     m_subsystem = subsystem;
 
   }

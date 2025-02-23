@@ -1,16 +1,16 @@
-package frc.robot.commands.DrivebaseCommands;
+package frc.robot.commands.Drivebase;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.FrontFacingCameraSubsystem;
-import frc.robot.subsystems.MecanumDrivebase;
+import frc.robot.subsystems.DrivebaseSubsystem;
+import frc.robot.subsystems.Sensors.FrontFacingCameraSubsystem;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
-public class GotoReef extends Command {
+public class a_goToReef extends Command {
 
-  private final MecanumDrivebase _drivebase;
+  private final DrivebaseSubsystem _drivebase;
   private final FrontFacingCameraSubsystem _camera;
   private PIDController drivePID;
   private PIDController turnPID;
@@ -25,15 +25,11 @@ public class GotoReef extends Command {
   double degree;
   double erir;  
 
-  private String level;
-
-
-  public GotoReef(MecanumDrivebase subsystem, FrontFacingCameraSubsystem camera, CommandJoystick controller) {
+  public a_goToReef(DrivebaseSubsystem subsystem, FrontFacingCameraSubsystem camera, CommandJoystick controller) {
     _drivebase = subsystem;
     _camera = camera;
     turnPID = new PIDController(Constants.DrivebaseContants.turnP, Constants.DrivebaseContants.turnI, Constants.DrivebaseContants.turnD);
     drivePID = new PIDController(Constants.DrivebaseContants.driveP, Constants.DrivebaseContants.driveI, Constants.DrivebaseContants.driveD);
-    this.level = level;
     thisController = controller;
 
     addRequirements(subsystem);
@@ -95,9 +91,6 @@ public class GotoReef extends Command {
   @Override
   public void execute() {
 
-    double driveSpeedx = thisController.getX();
-    double driveSpeedy = thisController.getY();
-
     if (_camera.getTagID() != -1) {
       if (_camera.getTagID() == 6 || _camera.getTagID() == 7 || _camera.getTagID() == 8 || _camera.getTagID() == 9 || _camera.getTagID() == 10 || _camera.getTagID() == 11 || _camera.getTagID() == 17 || _camera.getTagID() == 18 || _camera.getTagID() == 19 || _camera.getTagID() == 20 || _camera.getTagID() == 21 || _camera.getTagID() == 22) {
 
@@ -128,9 +121,7 @@ public class GotoReef extends Command {
         Xoutput = drivePID.calculate(XdistanceError, Constants.AprilTagConstants.kCORAL_STATION_X);
         Youtput = drivePID.calculate(YdistanceError, Constants.AprilTagConstants.kCORAL_STATION_Y);
 
-        _drivebase.drive(-Xoutput, -Youtput, output);
-    } else {
-      _drivebase.smartDrive(-driveSpeedx, -driveSpeedy, thisController.getTwist() , false);
+        _drivebase.drive(-Xoutput, -Youtput, output, true, true);
     }
     
 

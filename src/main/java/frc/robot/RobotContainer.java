@@ -1,3 +1,4 @@
+// Rights Reserved: 2025, 10316 The Western Blue Tongues
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -5,130 +6,269 @@
 package frc.robot;
 
 import frc.robot.Constants.ButtonBoxConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AUTO_DriveSeconds;
-import frc.robot.commands.ArcadeDriveMecanum;
-import frc.robot.commands.DriveArmPivot;
-import frc.robot.commands.DriveElevator;
-import frc.robot.commands.HomeElevator;
-//import frc.robot.commands.Autos;
-import frc.robot.commands.InvertCmd;
-import frc.robot.commands.ResetElevatorEncoder;
-import frc.robot.commands.ResetGyroCmd;
-import frc.robot.commands.SetArmPos;
-import frc.robot.commands.SetElevatorPos;
-import frc.robot.commands.SetGoalSide;
-import frc.robot.commands.SmartDriveCmd;
-import frc.robot.commands.TakeNoteCmd;
-import frc.robot.commands.DrivebaseCommands.GotoReef;
-import frc.robot.subsystems.ArmPivotSubsystem;
+import frc.robot.commands.ArmPivot.m_driveArm;
+import frc.robot.commands.ArmPivot.a_setArmPosition;
+import frc.robot.commands.Drivebase.a_driveSeconds;
+import frc.robot.commands.Drivebase.n_setGoalSide;
+import frc.robot.commands.Drivebase.m_drive;
+import frc.robot.commands.Elevator.m_driveElevator;
+import frc.robot.commands.Elevator.n_homeElevator;
+import frc.robot.commands.Elevator.a_setElevatorPosition;
+import frc.robot.commands.Elevator.a_takeNote;
+import frc.robot.commands.Sensors.n_resetGyro;
+//import frc.robot.commands.DrivebaseCommands.GotoReef;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.FrontFacingCameraSubsystem;
-import frc.robot.subsystems.MecanumDrivebase;
-import frc.robot.subsystems.RearFacingCamera;
-
-import java.util.Set;
-
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.DrivebaseSubsystem;
+import frc.robot.subsystems.Sensors.FrontFacingCameraSubsystem;
+import frc.robot.subsystems.Sensors.RearFacingCamera;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-//import edu.wpi.first.wpilibj2.command.button.Trigger; // Useful later but not as of 29.01.25
+
+
 
 public class RobotContainer {
 
   // Define Subsystems
   private final FrontFacingCameraSubsystem _cameraObject = new FrontFacingCameraSubsystem();
   private final RearFacingCamera _rearCameraObject = new RearFacingCamera();
+  private final ElevatorSubsystem _elevator = new ElevatorSubsystem();
+  private final ArmSubsystem _armPivot = new ArmSubsystem();
+  private final DrivebaseSubsystem _drivebase = new DrivebaseSubsystem();
 
-  private final CommandJoystick _driverController =
-      new CommandJoystick(OperatorConstants.kDriverControllerPort);
-
-  private final ElevatorSubsystem _elevator = 
-      new ElevatorSubsystem();
-
-  private final ArmPivotSubsystem _ArmPivotSubsystem = 
-      new ArmPivotSubsystem();
-
-  private final CommandXboxController _manualSubsystemController = 
-      new CommandXboxController(1);
-
-  private final Joystick _driverButtonControls = 
-      new Joystick(OperatorConstants.kDriverControllerPort);
-  private final MecanumDrivebase _drivebase = new MecanumDrivebase();
-  private final CommandJoystick _buttonBox = new CommandJoystick(2);
+  // Define Controllers
+  private final CommandJoystick _driver = new CommandJoystick(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController _manualSubsystemController = new CommandXboxController(1);
+  private final CommandJoystick _operator = new CommandJoystick(2);
 
   public RobotContainer() {
     configureBindings();
 
-    _drivebase.setDefaultCommand(new SmartDriveCmd(_drivebase, _driverController, _driverButtonControls, _rearCameraObject, _cameraObject));
-    _elevator.setDefaultCommand(new DriveElevator(_elevator, _manualSubsystemController));
-    _ArmPivotSubsystem.setDefaultCommand(new DriveArmPivot(_ArmPivotSubsystem, _manualSubsystemController));
+    // Drive the Robot
+    _drivebase.setDefaultCommand(new m_drive(
+      _drivebase,
+      _driver,
+      _rearCameraObject,
+      _cameraObject
+    ));
+
+    // Manually Drive The Elevator
+    _elevator.setDefaultCommand(new m_driveElevator(
+      _elevator,
+     _manualSubsystemController
+     ));
+
+     // Manually Drive The Arm
+    _armPivot.setDefaultCommand(new m_driveArm(
+      _armPivot, 
+      _manualSubsystemController
+      ));
   }
 
   private void configureBindings() {
-    _driverController.button(3).onTrue(new ParallelCommandGroup(new ResetGyroCmd(_drivebase)));
-    _driverController.button(1).whileTrue(new GotoReef(_drivebase, _cameraObject, _driverController));
+    _driver.button(3).onTrue(new ParallelCommandGroup(new n_resetGyro(
+      _drivebase
+      )));
 
-      _buttonBox.button(ButtonBoxConstants.kL4_L_Button).onTrue(new ParallelCommandGroup( 
-        new SetElevatorPos(_elevator, "High Reef", _driverController),
-        new SetArmPos(_ArmPivotSubsystem, "High Reef", _driverController),
-        new SetGoalSide(_drivebase, "left")
+  //_driver.button(1).whileTrue(new GotoReef(
+    //_drivebase,
+    //_cameraObject,
+    //_driver
+    //));
+
+
+    // L-High
+    _operator.button(ButtonBoxConstants.kL4_L_Button).onTrue(
+      new ParallelCommandGroup(
+        new a_setElevatorPosition(
+          _elevator,
+          _armPivot,
+          "High Reef",
+          _driver
+          ),
+
+        new a_setArmPosition(
+          _armPivot,
+          "High Reef",
+          _driver
+          ),
+
+        new n_setGoalSide(
+          _drivebase,
+          "left"
+          )
     ));
 
-    _buttonBox.button(ButtonBoxConstants.kL3_L_Button).onTrue(new ParallelCommandGroup(
-      new SetElevatorPos(_elevator, "Mid Reef", _driverController),
-      new SetArmPos(_ArmPivotSubsystem, "Mid Reef", _driverController),
-      new SetGoalSide(_drivebase, "left")
+
+    // L-Mid
+    _operator.button(ButtonBoxConstants.kL3_L_Button).onTrue(
+      new ParallelCommandGroup(
+        new a_setElevatorPosition(
+          _elevator,
+          _armPivot,
+          "Mid Reef",
+          _driver
+          ),
+
+        new a_setArmPosition(
+          _armPivot,
+          "Mid Reef",
+          _driver
+          ),
+            
+        new n_setGoalSide(
+          _drivebase,
+          "left"
+          )
     ));
 
-    _buttonBox.button(ButtonBoxConstants.kL2_L_Button).onTrue(new ParallelCommandGroup(
-      new SetElevatorPos(_elevator, "Low Reef", _driverController),
-      new SetArmPos(_ArmPivotSubsystem, "Low Reef", _driverController),
-      new SetGoalSide(_drivebase, "left")
+
+    // L-Low
+    _operator.button(ButtonBoxConstants.kL2_L_Button).onTrue(
+      new ParallelCommandGroup(
+        new a_setElevatorPosition(
+          _elevator,
+          _armPivot,
+           "Low Reef",
+          _driver
+          ),
+
+        new a_setArmPosition(
+          _armPivot,
+           "Low Reef",
+          _driver
+          ),
+
+        new n_setGoalSide(
+          _drivebase,
+          "left"
+          )
     ));
 
-    
-    _buttonBox.button(ButtonBoxConstants.kL4_R_Button).onTrue(new ParallelCommandGroup( 
-      new SetElevatorPos(_elevator, "High Reef", _driverController),
-      new SetArmPos(_ArmPivotSubsystem, "High Reef", _driverController),
-      new SetGoalSide(_drivebase, "right")
-  ));
+    // R-High
+    _operator.button(ButtonBoxConstants.kL4_R_Button).onTrue(
+      new ParallelCommandGroup(
+        new a_setElevatorPosition(
+          _elevator,
+          _armPivot,
+          "High Reef",
+          _driver
+          ),
 
-  _buttonBox.button(ButtonBoxConstants.kL3_R_Button).onTrue(new ParallelCommandGroup(
-    new SetElevatorPos(_elevator, "Mid Reef", _driverController),
-    new SetArmPos(_ArmPivotSubsystem, "Mid Reef", _driverController),
-    new SetGoalSide(_drivebase, "right")
-  ));
+        new a_setArmPosition(
+          _armPivot,
+          "High Reef",
+          _driver
+          ),
 
-  _buttonBox.button(ButtonBoxConstants.kL2_R_Button).onTrue(new ParallelCommandGroup(
-    new SetElevatorPos(_elevator, "Low Reef", _driverController),
-    new SetArmPos(_ArmPivotSubsystem, "Low Reef", _driverController),
-    new SetGoalSide(_drivebase, "right")
-  ));
-
-
-
-    _driverController.button(8).whileTrue(new SequentialCommandGroup(
-      new HomeElevator(_elevator, _ArmPivotSubsystem),
-      new SetElevatorPos(_elevator, "Neutral", _driverController)
+        new n_setGoalSide(
+          _drivebase,
+          "right"
+          )
     ));
-    _driverController.button(3).onTrue(new SequentialCommandGroup(
-      new TakeNoteCmd(_elevator, _ArmPivotSubsystem),
-      new SetElevatorPos(_elevator, "Neutral", _driverController)
+
+
+    // R-Mid
+    _operator.button(ButtonBoxConstants.kL3_R_Button).onTrue(
+      new ParallelCommandGroup(
+        new a_setElevatorPosition(
+          _elevator,
+          _armPivot,
+          "Mid Reef",
+          _driver
+          ),
+
+        new a_setArmPosition(
+          _armPivot,
+          "Mid Reef",
+          _driver
+          ),
+
+        new n_setGoalSide(
+          _drivebase,
+          "right"
+          )
+      ));
+
+
+      // R-Low
+    _operator.button(ButtonBoxConstants.kL2_R_Button).onTrue(
+      new ParallelCommandGroup(
+        new a_setElevatorPosition(
+          _elevator,
+          _armPivot,
+          "Low Reef",
+          _driver
+          ),
+
+        new a_setArmPosition(
+          _armPivot,
+           "Low Reef",
+          _driver
+          ),
+
+        new n_setGoalSide(
+          _drivebase, 
+          "right"
+          )
+      ));
+
+
+      // Home Elevator (Reset the Elevator Encoder which is Relative)
+    _driver.button(8).whileTrue(
+      new SequentialCommandGroup(
+        new n_homeElevator(
+          _elevator, 
+          _armPivot
+          ),
+
+        new a_setElevatorPosition(
+          _elevator, 
+          _armPivot,
+          "Neutral", 
+          _driver
+          )
     ));
-    
+
+
+    // Intake a coral piece
+    _driver.button(3).onTrue(
+      new SequentialCommandGroup(
+        new a_takeNote(
+          _elevator, 
+          _armPivot
+          ),
+
+        new a_setElevatorPosition(
+          _elevator, 
+          _armPivot,
+          "Neutral", 
+          _driver
+          )
+    ));
+
+    // Interupt the Arm and Elevator
+    _driver.button(5).onTrue(
+      new ParallelCommandGroup(
+        new m_driveElevator(
+          _elevator, 
+          _manualSubsystemController
+          ),
+
+        new m_driveArm(
+          _armPivot, 
+          _manualSubsystemController
+          )
+    ));
   }
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
-      new AUTO_DriveSeconds(_drivebase, _cameraObject, _rearCameraObject, 1, 0.3, 0, 0, "DDRIVE")
+      new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 1, 0.3, 0, 0, "DDRIVE")
     );
-}
+  }
 }

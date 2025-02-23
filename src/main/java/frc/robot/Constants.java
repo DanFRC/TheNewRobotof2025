@@ -61,9 +61,9 @@ public final class Constants {
     public static final double kArmPivotDropper = 0.3;
     public static final double kArmPivotHigh = 0.21;
 
-    public static double kP = 0.6;
+    public static double kP = 0.3;
     public static double kI = 0.2;
-    public static double kD = 0.125;
+    public static double kD = 0.02;
   }
 
   public static class ButtonBoxConstants {

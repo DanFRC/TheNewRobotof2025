@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Sensors;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
@@ -6,15 +6,15 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class FrontFacingCameraSubsystem extends SubsystemBase {
+public class RearFacingCamera extends SubsystemBase {
 
-    final PhotonCamera frontCamera = new PhotonCamera("FRONT-10316"); // This will be the name of the OV2311 hooked up to the OPi5+ once it's setup (IF I REMEMBER XD)
+    final PhotonCamera rearCamera = new PhotonCamera("REAR-10316"); // This will be the name of the OV2311 hooked up to the OPi5+ once it's setup (IF I REMEMBER XD)
     
     private double y;
     private double distance;
     private int tag;
 
-    public FrontFacingCameraSubsystem() {
+    public RearFacingCamera() {
     }
 
 
@@ -40,7 +40,7 @@ public class FrontFacingCameraSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        var result = frontCamera.getLatestResult();
+        var result = rearCamera.getLatestResult();
 
         if (result.hasTargets()) {
             PhotonTrackedTarget target = result.getBestTarget();

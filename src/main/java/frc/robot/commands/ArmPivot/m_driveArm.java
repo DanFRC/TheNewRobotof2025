@@ -1,33 +1,31 @@
-package frc.robot.commands;
+package frc.robot.commands.ArmPivot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.Constants.ArmPivotConstants;
+import frc.robot.subsystems.ArmSubsystem;
 
-public class DriveElevator extends Command {
+public class m_driveArm extends Command {
 
-  private final ElevatorSubsystem _elevator;
+  private final ArmSubsystem _armSubsystem;
 
   private CommandXboxController LEVEL;
 
-  public DriveElevator(ElevatorSubsystem subsystem, CommandXboxController controller) {
-    _elevator = subsystem;
+  public m_driveArm(ArmSubsystem subsystem, CommandXboxController controller) {
+    _armSubsystem = subsystem;
     LEVEL = controller;
 
     addRequirements(subsystem);
   }
 
-
-
   @Override
   public void initialize() {
   }
 
-
   @Override
   public void execute() {
-    _elevator.driveElevator(-LEVEL.getRightY());
+    _armSubsystem.driveArm(LEVEL.getLeftY());
    }
 
   @Override

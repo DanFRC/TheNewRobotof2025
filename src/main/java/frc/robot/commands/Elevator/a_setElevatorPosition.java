@@ -1,17 +1,22 @@
-package frc.robot.commands;
+package frc.robot.commands.Elevator;
+
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class SetElevatorPos extends Command {
+public class a_setElevatorPosition extends Command {
 
   private final ElevatorSubsystem _elevator;
+  private final Supplier<Double> _armEncoder_Supplier;
   private final PIDController elevatorPID;
   private final SlewRateLimiter elevatorSpeedLimiter;
   private final CommandJoystick _joy;
@@ -24,7 +29,7 @@ public class SetElevatorPos extends Command {
   private double kI = ElevatorConstants.kI;
   private double kD = ElevatorConstants.kD;
 
-  private double speedLimit = 1;
+  private double speedRate = 0.5;
 
   // Completes command once the elevator's encoder reads this point or less!
 
@@ -42,13 +47,14 @@ public class SetElevatorPos extends Command {
   private double NOTEUP = ElevatorConstants.kElevatorNoteUp;
   private double NOTEDOWN = ElevatorConstants.kElevatorNoteDown;
 
-  public SetElevatorPos(ElevatorSubsystem subsystem, String ReefLevel, CommandJoystick driverContrller) {
+  public a_setElevatorPosition(ElevatorSubsystem subsystem, ArmSubsystem armPivotSubsystem, String ReefLevel, CommandJoystick driverContrller) {
     _elevator = subsystem;
     LEVEL = ReefLevel;
     _joy = driverContrller;
+    _armEncoder_Supplier = () -> armPivotSubsystem.getEncoder();
 
     this.elevatorPID = new PIDController(kP, kI, kD);
-    this.elevatorSpeedLimiter = new SlewRateLimiter(speedLimit);
+    this.elevatorSpeedLimiter = new SlewRateLimiter(speedRate);
 
     addRequirements(subsystem);
   }
@@ -74,24 +80,20 @@ public class SetElevatorPos extends Command {
       goalPos = HIGHREEF;
     } else if (GOAL == "Neutral") {
       goalPos = NEUTRAL;
-    } else if (GOAL == "Note Up") {
-      goalPos = NOTEUP;
-      if (elevatorPID.getError() < 50) {
-        Commands.runOnce(() -> {
-          goalPos = NOTEDOWN;
-          Commands.waitSeconds(.5);
-          goalPos = NOTEUP;
-        });
-      } else {
-        goalPos = NOTEUP;
+    } else if (GOAL == "Home") {
+      if (_elevator.getLimitSwitch() == true && _armEncoder_Supplier.get() < 0.3) {
+        _elevator.HomeElevator();
+      } else if (_elevator.getLimitSwitch() == false) {
+        //
+        Timer tempTimer = new Timer();
+        tempTimer.start();
+        //
+        if (tempTimer.get() > 0.5) {
+          goalPos = NEUTRAL;
+        }
       }
-    } else if (GOAL == "Note Down") {
-      goalPos = NOTEDOWN;
-    } else {
-      goalPos = 0;
-      return;
     }
-    output = elevatorPID.calculate(_elevator.getEncoder(), goalPos);
+    output = elevatorSpeedLimiter.calculate(elevatorPID.calculate(_elevator.getEncoder(), goalPos));
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {

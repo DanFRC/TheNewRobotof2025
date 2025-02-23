@@ -8,14 +8,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmPivotConstants;
 
-public class ArmPivotSubsystem extends SubsystemBase {
+public class ArmSubsystem extends SubsystemBase {
 
     //Definitions
     private final VictorSPX _liftMotor = new VictorSPX(ArmPivotConstants.kArmPivotMotorPort);
     // Elevator confirmed using a REV through bore encoder
     private final DutyCycleEncoder _encoder = new DutyCycleEncoder(ArmPivotConstants.kEncoderPort);
 
-    public ArmPivotSubsystem() {
+    public ArmSubsystem() {
         // do smth once
     }
 

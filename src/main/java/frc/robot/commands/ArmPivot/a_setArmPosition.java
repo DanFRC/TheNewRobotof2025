@@ -1,19 +1,15 @@
-package frc.robot.commands;
+package frc.robot.commands.ArmPivot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.Constants.ArmPivotConstants;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.subsystems.ArmPivotSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
+public class a_setArmPosition extends Command {
 
-public class SetArmPos extends Command {
-
-  private final ArmPivotSubsystem _arm;
+  private final ArmSubsystem _arm;
   private final PIDController armPID;
   private final SlewRateLimiter armSpeedLimiter;
   private final CommandJoystick _joy;
@@ -25,7 +21,7 @@ public class SetArmPos extends Command {
   private double kI = ArmPivotConstants.kI;
   private double kD = ArmPivotConstants.kD;
 
-  private double speedLimit = 1;
+  private double speedRate = 0.5;
 
   // Completes command once the elevator's encoder reads this point or less!
 
@@ -41,13 +37,13 @@ public class SetArmPos extends Command {
   private double HIGHREEF = ArmPivotConstants.kArmPivotHigh;
   private double NEUTRAL = ArmPivotConstants.kArmPivotDeadZoneMax;
 
-  public SetArmPos(ArmPivotSubsystem subsystem, String ReefLevel, CommandJoystick driverContrller) {
+  public a_setArmPosition(ArmSubsystem subsystem, String ReefLevel, CommandJoystick driverContrller) {
     _arm = subsystem;
     LEVEL = ReefLevel;
     _joy = driverContrller;
 
     this.armPID = new PIDController(kP, kI, kD);
-    this.armSpeedLimiter = new SlewRateLimiter(speedLimit);
+    this.armSpeedLimiter = new SlewRateLimiter(speedRate);
 
     addRequirements(subsystem);
   }
@@ -79,7 +75,7 @@ public class SetArmPos extends Command {
       return;
     }
     error = _arm.getEncoder() - goalPos;
-    output = armPID.calculate(_arm.getEncoder(), goalPos);
+    output = armSpeedLimiter.calculate(armPID.calculate(_arm.getEncoder(), goalPos));
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {

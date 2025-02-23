@@ -1,16 +1,16 @@
-package frc.robot.commands;
+package frc.robot.commands.Drivebase;
 
-import frc.robot.subsystems.MecanumDrivebase;
+import frc.robot.subsystems.DrivebaseSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class SetGoalSide extends Command {
+public class n_setGoalSide extends Command {
 
-  private final MecanumDrivebase m_subsystem;
+  private final DrivebaseSubsystem m_subsystem;
 
   private String side;
   private boolean done = false;
 
-  public SetGoalSide(MecanumDrivebase subsystem, String side) {
+  public n_setGoalSide(DrivebaseSubsystem subsystem, String side) {
     m_subsystem = subsystem;
     this.side = side;
   }

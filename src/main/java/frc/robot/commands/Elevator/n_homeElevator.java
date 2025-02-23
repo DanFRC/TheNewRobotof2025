@@ -1,16 +1,16 @@
-package frc.robot.commands;
+package frc.robot.commands.Elevator;
 
 import frc.robot.Constants.ArmPivotConstants;
-import frc.robot.subsystems.ArmPivotSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class HomeElevator extends Command {
+public class n_homeElevator extends Command {
 
   private final ElevatorSubsystem _elevator;
-  private final ArmPivotSubsystem _armPivot;
+  private final ArmSubsystem _armPivot;
   private final PIDController armPID;
 
   private double kP = ArmPivotConstants.kP;
@@ -19,7 +19,7 @@ public class HomeElevator extends Command {
 
   private boolean finished = false;
 
-  public HomeElevator(ElevatorSubsystem subsystem, ArmPivotSubsystem arm) {
+  public n_homeElevator(ElevatorSubsystem subsystem, ArmSubsystem arm) {
     _elevator = subsystem;
     _armPivot = arm;
     armPID = new PIDController(kP, kI, kD);
@@ -38,12 +38,6 @@ public class HomeElevator extends Command {
     _armPivot.driveArm(armPID.calculate(_armPivot.getEncoder(), ArmPivotConstants.kArmPivotDeadZoneMax));
 
     SmartDashboard.putNumber("Home Error", armPID.getError());
-
-    if (_elevator.getLimitSwitch() == true && Math.abs(armPID.getError()) < 0.3) {
-      _elevator.HomeElevator();
-    } else if (_elevator.getLimitSwitch() == false) {
-      finished = true;
-    }
   }
 
   @Override

@@ -1,18 +1,18 @@
-package frc.robot.commands;
+package frc.robot.commands.Drivebase;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.FrontFacingCameraSubsystem;
-import frc.robot.subsystems.MecanumDrivebase;
-import frc.robot.subsystems.RearFacingCamera;
+import frc.robot.subsystems.DrivebaseSubsystem;
+import frc.robot.subsystems.Sensors.FrontFacingCameraSubsystem;
+import frc.robot.subsystems.Sensors.RearFacingCamera;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 
-public class AUTO_DriveSeconds extends Command {
+public class a_driveSeconds extends Command {
 
-  private final MecanumDrivebase _drivebase;
+  private final DrivebaseSubsystem _drivebase;
 
   // Define stuff
   private PIDController drivePID;
@@ -32,7 +32,7 @@ public class AUTO_DriveSeconds extends Command {
 
   private String DriveType;
 
-  public AUTO_DriveSeconds(MecanumDrivebase drivebase, FrontFacingCameraSubsystem front_cam, RearFacingCamera rear_cam, double TIME, double xValue, double yValue, double turnHeading, String TYPE) {
+  public a_driveSeconds(DrivebaseSubsystem drivebase, FrontFacingCameraSubsystem front_cam, RearFacingCamera rear_cam, double TIME, double xValue, double yValue, double turnHeading, String TYPE) {
     _drivebase = drivebase;
     this.driveSpeedx = xValue;
     this.driveSpeedy = yValue;
@@ -59,7 +59,7 @@ public class AUTO_DriveSeconds extends Command {
   private double calculatePIDMovement(double heading, String TP) {
     if (TP == "KEEP-HEADING") {
       double turnError = _drivebase.getGyroYaw() - heading;
-      double output = turnPID.calculate(turnError, heading);
+      double output = turnPID.calculate(_drivebase.getGyroYaw(), heading);
       return output;
     } else {
       return 0;
@@ -69,11 +69,11 @@ public class AUTO_DriveSeconds extends Command {
   @Override
   public void execute() {
     if (DriveType == "FO-CSTATION") {
-      _drivebase.drive(driveSpeedx, driveSpeedy, calculatePIDMovement(54, "KEEP-HEADING"));
+      _drivebase.drive(driveSpeedx, driveSpeedy, calculatePIDMovement(54, "KEEP-HEADING"), true, true);
     } else if (DriveType == "DDRIVE") {
-      _drivebase.goTo(driveSpeedx, driveSpeedy, heading);
+      _drivebase.drive(driveSpeedx, driveSpeedy, heading, true, false);
     } else if (DriveType == "FO-DDRIVE") {
-      _drivebase.drive(driveSpeedx, driveSpeedy, heading);
+      _drivebase.drive(driveSpeedx, driveSpeedy, heading, true, true);
     }
   }
 
