@@ -42,7 +42,7 @@ public class a_setArmPosition extends Command {
     LEVEL = ReefLevel;
     _joy = driverContrller;
 
-    this.armPID = new PIDController(kP, kI, kD);
+    this.armPID = new PIDController(1.85, 2.5, 0.5);
     this.armSpeedLimiter = new SlewRateLimiter(speedRate);
 
     addRequirements(subsystem);
@@ -54,6 +54,8 @@ public class a_setArmPosition extends Command {
   public void initialize() {
     output = 0;
     armPID.reset();
+
+    armPID.setIZone(.05);
 
     goalPos = NEUTRAL;
   }
@@ -75,7 +77,7 @@ public class a_setArmPosition extends Command {
       return;
     }
     error = _arm.getEncoder() - goalPos;
-    output = armSpeedLimiter.calculate(armPID.calculate(_arm.getEncoder(), goalPos));
+    output = armPID.calculate(_arm.getEncoder(), goalPos);
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {

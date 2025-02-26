@@ -36,7 +36,7 @@ public final class Constants {
     public static double kI = 0.0005;
     public static double kD = 0.0001;
 
-    public static final double kElevatorDeadZoneMax = 16000;
+    public static final double kElevatorDeadZoneMax = 15000;
     public static final double kElevatorDeadZoneMin = 10;
 
     public static final double kElevatorMid = 8400;
@@ -57,9 +57,10 @@ public final class Constants {
     public static final double kArmPivotDeadZoneMin = 0.666;
 
     public static final double kArmPivotMid = 0.24;
-    public static final double kArmPivotLow = 0.24;
+    public static final double kArmPivotLow = 0.4;
     public static final double kArmPivotDropper = 0.3;
-    public static final double kArmPivotHigh = 0.21;
+    public static final double kArmPivotHigh = 0.64;
+    public static final double kArmPivotNeutral = 0.64;
 
     public static double kP = 0.3;
     public static double kI = 0.2;

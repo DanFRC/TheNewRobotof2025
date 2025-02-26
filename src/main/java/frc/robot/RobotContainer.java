@@ -17,6 +17,7 @@ import frc.robot.commands.Elevator.n_homeElevator;
 import frc.robot.commands.Elevator.a_setElevatorPosition;
 import frc.robot.commands.Elevator.a_takeNote;
 import frc.robot.commands.Sensors.n_resetGyro;
+import frc.robot.commands.Unused.ResetElevatorEncoder;
 //import frc.robot.commands.DrivebaseCommands.GotoReef;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -218,18 +219,21 @@ public class RobotContainer {
       ));
 
 
+      //
+      _operator.button(ButtonBoxConstants.kALG_23).onTrue(
+        new ParallelCommandGroup(
+          new ResetElevatorEncoder(
+            _elevator
+            )
+        ));
+
       // Home Elevator (Reset the Elevator Encoder which is Relative)
     _driver.button(8).whileTrue(
       new SequentialCommandGroup(
-        new n_homeElevator(
-          _elevator, 
-          _armPivot
-          ),
-
         new a_setElevatorPosition(
           _elevator, 
           _armPivot,
-          "Neutral", 
+          "Home",
           _driver
           )
     ));

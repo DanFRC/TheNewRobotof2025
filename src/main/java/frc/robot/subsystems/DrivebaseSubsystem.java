@@ -55,15 +55,19 @@ public class DrivebaseSubsystem extends SubsystemBase {
 
     public void drive(double speedX, double speedY, double PIDoutput, boolean AUTOTurning, boolean fieldOriented) { 
 
-      if (PIDoutput > 0 && AUTOTurning == false) {
-        PIDoutput *= PIDoutput;
+      if (AUTOTurning == false) {
+        if (PIDoutput > 0) {
+          PIDoutput *= PIDoutput;
+        } else if (PIDoutput < 0) {
+          PIDoutput *= -1 * PIDoutput;
+        }
+        
         if (fieldOriented == true) {
           _robotDrive.driveCartesian(speedX, speedY, PIDoutput, rotation.fromDegrees(-gyro.getYaw()));
         } else if (fieldOriented == false) {
           _robotDrive.driveCartesian(speedX, speedY, PIDoutput);
         }
-      } else if (PIDoutput < 0 && AUTOTurning == false) {
-        PIDoutput *= -1 * PIDoutput;
+      } else if (AUTOTurning == true) {
         _robotDrive.driveCartesian(speedX, speedY, PIDoutput);
       }
 

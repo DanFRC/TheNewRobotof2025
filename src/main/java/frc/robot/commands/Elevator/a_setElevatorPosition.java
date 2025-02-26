@@ -93,7 +93,7 @@ public class a_setElevatorPosition extends Command {
         }
       }
     }
-    output = elevatorSpeedLimiter.calculate(elevatorPID.calculate(_elevator.getEncoder(), goalPos));
+    output = elevatorPID.calculate(_elevator.getEncoder(), goalPos);
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
