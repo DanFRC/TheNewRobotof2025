@@ -36,11 +36,11 @@ public final class Constants {
     public static double kI = 0.0005;
     public static double kD = 0.0001;
 
-    public static final double kElevatorDeadZoneMax = 15000;
+    public static final double kElevatorDeadZoneMax = 16100;
     public static final double kElevatorDeadZoneMin = 10;
 
-    public static final double kElevatorMid = 8400;
-    public static final double kElevatorLow = 4000;
+    public static final double kElevatorMid = 8100;
+    public static final double kElevatorLow = 2000;
     public static final double kElevatorDropper = 4000;
 
     public static final double kElevatorNeutral = 8400;
@@ -59,12 +59,13 @@ public final class Constants {
     public static final double kArmPivotMid = 0.24;
     public static final double kArmPivotLow = 0.4;
     public static final double kArmPivotDropper = 0.3;
-    public static final double kArmPivotHigh = 0.64;
+    public static final double kArmPivotHigh = 0.25;
     public static final double kArmPivotNeutral = 0.64;
+    public static final double kArmPivotHighScore = 0.31;
 
-    public static double kP = 0.3;
-    public static double kI = 0.2;
-    public static double kD = 0.02;
+    public static double kP = 2.25;
+    public static double kI = 3;
+    public static double kD = 0.6;
   }
 
   public static class ButtonBoxConstants {

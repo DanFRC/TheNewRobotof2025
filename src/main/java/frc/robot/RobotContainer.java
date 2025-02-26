@@ -18,6 +18,7 @@ import frc.robot.commands.Elevator.a_setElevatorPosition;
 import frc.robot.commands.Elevator.a_takeNote;
 import frc.robot.commands.Sensors.n_resetGyro;
 import frc.robot.commands.Unused.ResetElevatorEncoder;
+import frc.robot.commands.Unused.Test;
 //import frc.robot.commands.DrivebaseCommands.GotoReef;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.DrivebaseSubsystem;
 import frc.robot.subsystems.Sensors.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.Sensors.RearFacingCamera;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -71,7 +73,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    _driver.button(3).onTrue(new ParallelCommandGroup(new n_resetGyro(
+    _driver.button(11).onTrue(new ParallelCommandGroup(new n_resetGyro(
       _drivebase
       )));
 
@@ -227,26 +229,10 @@ public class RobotContainer {
             )
         ));
 
-      // Home Elevator (Reset the Elevator Encoder which is Relative)
-    _driver.button(8).whileTrue(
-      new SequentialCommandGroup(
-        new a_setElevatorPosition(
-          _elevator, 
-          _armPivot,
-          "Home",
-          _driver
-          )
-    ));
-
 
     // Intake a coral piece
-    _driver.button(3).onTrue(
+    _driver.button(13).onTrue(
       new SequentialCommandGroup(
-        new a_takeNote(
-          _elevator, 
-          _armPivot
-          ),
-
         new a_setElevatorPosition(
           _elevator, 
           _armPivot,
@@ -268,6 +254,14 @@ public class RobotContainer {
           _manualSubsystemController
           )
     ));
+
+    // // Test works
+    // _driver.button(12).onTrue(
+    //   new SequentialCommandGroup(
+    //     new Test(_drivebase),
+    //     Commands.waitSeconds(1),
+    //     (new Test(_drivebase))
+    // ));
   }
 
   public Command getAutonomousCommand() {

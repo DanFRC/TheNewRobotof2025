@@ -17,6 +17,16 @@ public class DrivebaseSubsystem extends SubsystemBase {
 
     private Rotation2d rotation = new Rotation2d();
 
+    private boolean test = false;
+
+    public void setTest() {
+        if (test == false) {
+            test = true;
+        } else if (test == true) {
+            test = false;
+        } 
+    }
+
   private String side = "left";
 
   private final MecanumDrive _robotDrive;
@@ -81,5 +91,6 @@ public class DrivebaseSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Yaw", gyro.getYaw());
+        SmartDashboard.putBoolean("test", test);
     }
 }

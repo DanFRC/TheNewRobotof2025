@@ -29,12 +29,21 @@ public class a_setArmPosition extends Command {
   private double goalPos;
   private double output;
 
+  private double leanience = 0.066;
+
+  private boolean finished = false;
+
   // POSITIONS
   // THESE POSITIIONS ARE FOR THE REV THROUGH BORE RELATIVE VERSION OF THE ENCODER
   private double LOWGOAL = ArmPivotConstants.kArmPivotDropper;
+
   private double LOWREEF = ArmPivotConstants.kArmPivotLow;
+
   private double MIDREEF = ArmPivotConstants.kArmPivotMid;
+
   private double HIGHREEF = ArmPivotConstants.kArmPivotHigh;
+  private double HIGHSCORE = ArmPivotConstants.kArmPivotHighScore;
+
   private double NEUTRAL = ArmPivotConstants.kArmPivotDeadZoneMax;
 
   public a_setArmPosition(ArmSubsystem subsystem, String ReefLevel, CommandJoystick driverContrller) {
@@ -42,7 +51,7 @@ public class a_setArmPosition extends Command {
     LEVEL = ReefLevel;
     _joy = driverContrller;
 
-    this.armPID = new PIDController(1.85, 2.5, 0.5);
+    this.armPID = new PIDController(ArmPivotConstants.kP, ArmPivotConstants.kI, ArmPivotConstants.kD);
     this.armSpeedLimiter = new SlewRateLimiter(speedRate);
 
     addRequirements(subsystem);
@@ -52,6 +61,8 @@ public class a_setArmPosition extends Command {
 
   @Override
   public void initialize() {
+
+    finished = false;
     output = 0;
     armPID.reset();
 
@@ -64,14 +75,40 @@ public class a_setArmPosition extends Command {
 
     if (GOAL == "Low Goal") {
       goalPos = LOWGOAL;
+      _arm.setArm(goalPos, false);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "Low Reef") {
       goalPos = LOWREEF;
+      _arm.setArm(goalPos, false);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "Mid Reef") {
       goalPos = MIDREEF;
+      _arm.setArm(goalPos, false);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "High Reef") {
       goalPos = HIGHREEF;
+      _arm.setArm(goalPos, false);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "Neutral") {
       goalPos = NEUTRAL;
+      _arm.setArm(goalPos, false);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
+    } else if (GOAL == "High Score") {
+      goalPos = HIGHSCORE;
+      _arm.setArm(goalPos, true);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
     } else {
       goalPos = 0;
       return;
@@ -81,7 +118,6 @@ public class a_setArmPosition extends Command {
 
     // This if statement wraps the encoder positions between the 2 values
     //if () {
-      _arm.driveArm(output);
         
       SmartDashboard.putNumber("PIDARM", output);
       SmartDashboard.putNumber("ARM Error", error);
@@ -113,10 +149,16 @@ public class a_setArmPosition extends Command {
    }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    finished = false;
+  }
 
   @Override
   public boolean isFinished() {
-    return false;
+    if (finished == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

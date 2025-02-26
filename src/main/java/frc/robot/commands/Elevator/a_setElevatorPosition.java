@@ -37,6 +37,10 @@ public class a_setElevatorPosition extends Command {
   private double goalPos;
   private double output;
 
+  private double leanience = 200;
+
+  private boolean finished = false;
+
   // POSITIONS
   // THESE POSITIIONS ARE FOR THE REV THROUGH BORE RELATIVE VERSION OF THE ENCODER
   private double LOWGOAL = ElevatorConstants.kElevatorDropper;
@@ -63,6 +67,7 @@ public class a_setElevatorPosition extends Command {
 
   @Override
   public void initialize() {
+    finished = false;
     output = 0;
     elevatorPID.reset();
     elevatorPID.setIZone(1050);
@@ -72,33 +77,36 @@ public class a_setElevatorPosition extends Command {
 
     if (GOAL == "Low Goal") {
       goalPos = LOWGOAL;
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "Low Reef") {
       goalPos = LOWREEF;
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "Mid Reef") {
       goalPos = MIDREEF;
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "High Reef") {
       goalPos = HIGHREEF;
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
+      }
     } else if (GOAL == "Neutral") {
       goalPos = NEUTRAL;
-    } else if (GOAL == "Home") {
-      if (_elevator.getLimitSwitch() == true && _armEncoder_Supplier.get() < 0.3) {
-        _elevator.HomeElevator();
-      } else if (_elevator.getLimitSwitch() == false) {
-        //
-        Timer tempTimer = new Timer();
-        tempTimer.start();
-        //
-        if (tempTimer.get() > 0.5) {
-          goalPos = NEUTRAL;
-        }
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
       }
     }
-    output = elevatorPID.calculate(_elevator.getEncoder(), goalPos);
 
-    // This if statement wraps the encoder positions between the 2 values
-    //if () {
-      _elevator.driveElevator(output);
-    //}
   }
 
   @Override
@@ -136,10 +144,16 @@ public class a_setElevatorPosition extends Command {
    }
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    finished = false;
+  }
 
   @Override
   public boolean isFinished() {
-    return false;
+    if (finished == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
