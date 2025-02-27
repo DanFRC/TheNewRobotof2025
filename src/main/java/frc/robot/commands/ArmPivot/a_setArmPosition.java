@@ -109,6 +109,12 @@ public class a_setArmPosition extends Command {
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
+    } else if (GOAL == "Intake") {
+      goalPos = ArmPivotConstants.kArmPivotDeadZoneMin + leanience;
+      _arm.setArm(goalPos, false);
+      if (Math.abs(_arm.getArmError()) < leanience) {
+        finished = true;
+      }
     } else {
       goalPos = 0;
       return;
@@ -143,6 +149,9 @@ public class a_setArmPosition extends Command {
       // GO TO HIGHREEF
       setArm(LEVEL);
     } else if (LEVEL == "Neutral") {
+      // GO TO NEUTRAL
+      setArm(LEVEL);
+    } else if (LEVEL == "Intake") {
       // GO TO NEUTRAL
       setArm(LEVEL);
     } 

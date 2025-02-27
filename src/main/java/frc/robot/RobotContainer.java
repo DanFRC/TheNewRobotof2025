@@ -28,6 +28,7 @@ import frc.robot.subsystems.Sensors.RearFacingCamera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -238,8 +239,37 @@ public class RobotContainer {
           _armPivot,
           "Neutral", 
           _driver
-          )
+          ),
+          
+        new a_setArmPosition(
+        _armPivot, 
+        "Intake", 
+        _driver
+        ),
+
+        Commands.waitSeconds(0.5),
+
+        new a_setElevatorPosition(
+          _elevator, 
+          _armPivot, 
+          "Intake", 
+          _driver
+          ),
+
+        new a_setElevatorPosition(
+          _elevator, 
+          _armPivot, 
+          "Neutral", 
+          _driver
+          ),
+
+          new a_setArmPosition(
+            _armPivot, 
+            "Neutral", 
+            _driver
+            )
     ));
+
 
     // Interupt the Arm and Elevator
     _driver.button(5).onTrue(

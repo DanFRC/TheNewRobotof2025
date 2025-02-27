@@ -105,6 +105,12 @@ public class a_setElevatorPosition extends Command {
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
+    } else if (GOAL == "Intake") {
+      goalPos = 5000;
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
+      }
     }
 
   }
@@ -134,7 +140,7 @@ public class a_setElevatorPosition extends Command {
     } else if (LEVEL == "Neutral") {
       // GO TO NEUTRAL
       setElevator(LEVEL);
-    } else if (LEVEL == "Note Up") {
+    } else if (LEVEL == "Intake") {
       // GO TO NEUTRAL
       setElevator(LEVEL);
     } else if (LEVEL == "Note Down") {
