@@ -19,14 +19,6 @@ public class DrivebaseSubsystem extends SubsystemBase {
 
     private boolean test = false;
 
-    public void setTest() {
-        if (test == false) {
-            test = true;
-        } else if (test == true) {
-            test = false;
-        } 
-    }
-
   private String side = "left";
 
   private final MecanumDrive _robotDrive;
@@ -62,6 +54,14 @@ public class DrivebaseSubsystem extends SubsystemBase {
     (double speedFR) -> frontRight.set(ControlMode.PercentOutput, speedFR),
     (double speedRR) -> rearRight.set(ControlMode.PercentOutput, speedRR));
   }
+
+  public void setTest() {
+    if (test == false) {
+        test = true;
+    } else if (test == true) {
+        test = false;
+    } 
+}
 
     public void drive(double speedX, double speedY, double PIDoutput, boolean AUTOTurning, boolean fieldOriented) { 
 

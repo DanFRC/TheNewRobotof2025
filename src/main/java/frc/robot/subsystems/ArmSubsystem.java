@@ -20,7 +20,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final VictorSPX _liftMotor = new VictorSPX(ArmPivotConstants.kArmPivotMotorPort);
     private PIDController normalPID = new PIDController(ArmPivotConstants.kP, ArmPivotConstants.kI, ArmPivotConstants.kD);
     private PIDController slowPID = new PIDController(1.6, 2.4, 0.5);
-    private SlewRateLimiter smoother = new SlewRateLimiter(0.4);
+    private SlewRateLimiter smoother = new SlewRateLimiter(0.8);
 
     private double point;
     private boolean slowed;
@@ -31,8 +31,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem() {
         // do smth once
+        slowPID.reset();
+        smoother.reset(0);
+        slowPID.setIZone(0.2);
+        normalPID.reset();
+        normalPID.setIZone(0.125);
         homed = false;
-        point = _encoder.get();
+        point = 0.25;
         slowed = false;
     }
 
@@ -52,9 +57,11 @@ public class ArmSubsystem extends SubsystemBase {
     public void setArm(double setPoint, boolean slow) {
         if (slow == true) {
             slowPID.reset();
+            smoother.reset(0);
             slowPID.setIZone(0.2);
         } else {
             normalPID.reset();
+            smoother.reset(0);
             normalPID.setIZone(0.125);
         }
         point = setPoint;
@@ -77,12 +84,30 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
 
             if (slowed == true) {
-                _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(slowPID.calculate(_encoder.get(), point)));
+                double slowSpeed = slowPID.calculate(_encoder.get(), point);
+
+                if (slowSpeed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
+                    _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(slowSpeed));
+                } else if (slowSpeed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
+                    _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(slowSpeed));
+                } else {
+                    _liftMotor.set(ControlMode.PercentOutput, 0);
+                }
+                
             } else {
-                _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(normalPID.calculate(_encoder.get(), point)));
+                double NormSpeed = normalPID.calculate(_encoder.get(), point);
+
+                if (NormSpeed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
+                    _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
+                } else if (NormSpeed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
+                    _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
+                } else {
+                    _liftMotor.set(ControlMode.PercentOutput, 0);
+                }
             }
         
         SmartDashboard.putNumber("Arm Encoder Output", getEncoder());
+        SmartDashboard.putNumber("Pos", point);
     }
 
     @Override

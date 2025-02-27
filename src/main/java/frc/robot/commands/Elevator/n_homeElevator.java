@@ -10,34 +10,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class n_homeElevator extends Command {
 
   private final ElevatorSubsystem _elevator;
-  private final ArmSubsystem _armPivot;
-  private final PIDController armPID;
-
-  private double kP = ArmPivotConstants.kP;
-  private double kI = ArmPivotConstants.kI;
-  private double kD = ArmPivotConstants.kD;
-
   private boolean finished = false;
 
-  public n_homeElevator(ElevatorSubsystem subsystem, ArmSubsystem arm) {
-    _elevator = subsystem;
-    _armPivot = arm;
-    armPID = new PIDController(kP, kI, kD);
-
-    addRequirements(subsystem, arm);
+  public n_homeElevator(ElevatorSubsystem ele) {
+    _elevator = ele;
   }
 
   @Override
   public void initialize() {
-    finished = false;
+    _elevator.resetHome();
+    finished = true;
   }
 
   @Override
   public void execute() {
 
-    _armPivot.driveArm(armPID.calculate(_armPivot.getEncoder(), ArmPivotConstants.kArmPivotDeadZoneMax));
-
-    SmartDashboard.putNumber("Home Error", armPID.getError());
   }
 
   @Override

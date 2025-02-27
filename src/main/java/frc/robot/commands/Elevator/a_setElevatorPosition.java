@@ -106,7 +106,7 @@ public class a_setElevatorPosition extends Command {
         finished = true;
       }
     } else if (GOAL == "Intake") {
-      goalPos = 5000;
+      goalPos = 4750;
       _elevator.setElevator(goalPos);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;

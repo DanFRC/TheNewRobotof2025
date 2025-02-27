@@ -110,7 +110,7 @@ public class a_setArmPosition extends Command {
         finished = true;
       }
     } else if (GOAL == "Intake") {
-      goalPos = ArmPivotConstants.kArmPivotDeadZoneMin + leanience;
+      goalPos = ArmPivotConstants.kArmPivotDeadZoneMin + leanience/2.5;
       _arm.setArm(goalPos, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;

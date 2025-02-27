@@ -66,7 +66,7 @@ public class m_drive extends Command {
         SmartDashboard.putNumber("TurnOutput", turnOutput);
         SmartDashboard.putNumber("TurnAdjustment", turnAdjustment);
         
-        drivebase.drive(-xSpeed, -ySpeed, controller.getTwist(), false, true);
+        drivebase.drive(xSpeed, -ySpeed, controller.getTwist(), false, true);
         
         targetAngle = normalizeAngle(turnAdjustment);
         angleError = normalizeAngle(drivebase.getGyroYaw() - targetAngle);

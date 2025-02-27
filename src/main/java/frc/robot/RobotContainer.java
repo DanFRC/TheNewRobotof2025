@@ -18,7 +18,6 @@ import frc.robot.commands.Elevator.a_setElevatorPosition;
 import frc.robot.commands.Elevator.a_takeNote;
 import frc.robot.commands.Sensors.n_resetGyro;
 import frc.robot.commands.Unused.ResetElevatorEncoder;
-import frc.robot.commands.Unused.Test;
 //import frc.robot.commands.DrivebaseCommands.GotoReef;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -52,7 +51,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    // Drive the Robot
+    //Drive the Robot
     _drivebase.setDefaultCommand(new m_drive(
       _drivebase,
       _driver,
@@ -60,17 +59,17 @@ public class RobotContainer {
       _cameraObject
     ));
 
-    // Manually Drive The Elevator
-    _elevator.setDefaultCommand(new m_driveElevator(
-      _elevator,
-     _manualSubsystemController
-     ));
+    // // Manually Drive The Elevator
+    // _elevator.setDefaultCommand(new m_driveElevator(
+    //   _elevator,
+    //  _manualSubsystemController
+    //  ));
 
-     // Manually Drive The Arm
-    _armPivot.setDefaultCommand(new m_driveArm(
-      _armPivot, 
-      _manualSubsystemController
-      ));
+    //  // Manually Drive The Arm
+    // _armPivot.setDefaultCommand(new m_driveArm(
+    //   _armPivot, 
+    //   _manualSubsystemController
+    //   ));
   }
 
   private void configureBindings() {
@@ -84,6 +83,10 @@ public class RobotContainer {
     //_driver
     //));
 
+  
+    _driver.button(8).onTrue(new n_homeElevator(
+      _elevator
+      ));
 
     // L-High
     _operator.button(ButtonBoxConstants.kL4_L_Button).onTrue(
@@ -240,6 +243,8 @@ public class RobotContainer {
           "Neutral", 
           _driver
           ),
+
+          Commands.waitSeconds(1.5),
           
         new a_setArmPosition(
         _armPivot, 
@@ -247,7 +252,7 @@ public class RobotContainer {
         _driver
         ),
 
-        Commands.waitSeconds(0.5),
+        Commands.waitSeconds(1.5),
 
         new a_setElevatorPosition(
           _elevator, 
@@ -256,12 +261,16 @@ public class RobotContainer {
           _driver
           ),
 
+          Commands.waitSeconds(1),
+
         new a_setElevatorPosition(
           _elevator, 
           _armPivot, 
           "Neutral", 
           _driver
           ),
+
+          Commands.waitSeconds(0.8),
 
           new a_setArmPosition(
             _armPivot, 
