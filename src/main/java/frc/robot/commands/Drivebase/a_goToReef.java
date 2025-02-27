@@ -94,17 +94,17 @@ public class a_goToReef extends Command {
     if (_camera.getTagID() != -1) {
       if (_camera.getTagID() == 6 || _camera.getTagID() == 7 || _camera.getTagID() == 8 || _camera.getTagID() == 9 || _camera.getTagID() == 10 || _camera.getTagID() == 11 || _camera.getTagID() == 17 || _camera.getTagID() == 18 || _camera.getTagID() == 19 || _camera.getTagID() == 20 || _camera.getTagID() == 21 || _camera.getTagID() == 22) {
 
-        if (_camera.getDistanceToTag() < 1.5) {
+        if (_camera.getDistanceToTag() < 1) {
           degree = wrapAngle(findHeading(_camera.getTagID()));
 
           erir = wrapAngle(_drivebase.getGyroYaw() - degree);
           turnPID.setSetpoint(degree);
-          output = -turnPID.calculate(erir);
+          output = -turnPID.calculate(_drivebase.getGyroYaw());
           SmartDashboard.putNumber("erir", erir);
         } else {
-          double turnError = _camera.getYDistanceFromTag();
+          double cameraY = _camera.getYDistanceFromTag();
 
-          output = turnPID.calculate(turnError, 0);
+          output = turnPID.calculate(cameraY, 0);
         }
 
       } else {
