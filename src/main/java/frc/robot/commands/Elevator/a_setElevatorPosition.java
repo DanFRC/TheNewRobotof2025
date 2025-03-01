@@ -77,37 +77,37 @@ public class a_setElevatorPosition extends Command {
 
     if (GOAL == "Low Goal") {
       goalPos = LOWGOAL;
-      _elevator.setElevator(goalPos);
+      _elevator.setElevator(goalPos, n);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Low Reef") {
       goalPos = LOWREEF;
-      _elevator.setElevator(goalPos);
+      _elevator.setElevator(goalPos, n);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Mid Reef") {
       goalPos = MIDREEF;
-      _elevator.setElevator(goalPos);
+      _elevator.setElevator(goalPos, n);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "High Reef") {
       goalPos = HIGHREEF;
-      _elevator.setElevator(goalPos);
+      _elevator.setElevator(goalPos, n);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Neutral") {
       goalPos = NEUTRAL;
-      _elevator.setElevator(goalPos);
+      _elevator.setElevator(goalPos, n);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Intake") {
       goalPos = 4750;
-      _elevator.setElevator(goalPos);
+      _elevator.setElevator(goalPos, f);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
       }
