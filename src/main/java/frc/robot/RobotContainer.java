@@ -324,15 +324,7 @@ public class RobotContainer {
           _armPivot, 
           "Neutral", 
           _driver
-          ),
-
-          Commands.waitSeconds(0.8),
-
-          new a_setArmPosition(
-            _armPivot, 
-            "Neutral", 
-            _driver
-            )
+          )
     ));
 
 
