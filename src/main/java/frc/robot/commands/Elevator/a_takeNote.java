@@ -59,8 +59,6 @@ public class a_takeNote extends Command {
     SmartDashboard.putNumber("Timer", timer.get());
     SmartDashboard.putBoolean("RunOnce", runOnce);
     SmartDashboard.putNumber("Arm Error", armPID.getError());
-    
-    _armPivot.driveArm(armPID.calculate(_armPivot.getEncoder(), armHeading));
 
     if (Math.abs(armPID.getError()) < .2) {
       _elevator.driveElevator(elevatorPID.calculate(_elevator.getEncoder(), heading));

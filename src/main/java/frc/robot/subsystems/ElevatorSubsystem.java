@@ -38,6 +38,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         point = _encoder.get();
     }
 
+    public int getLevel() {
+        if (_encoder.get() > 13000) {
+            return 4;
+        } else if (_encoder.get() <= 13000 && _encoder.get() > 6000) {
+            return 3;
+        } else if (_encoder.get() <= 6000 && _encoder.get() > 1500) {
+            return 2;
+        } else {
+            return -1;
+        }
+    }
+
     public void driveElevator(double speed) {
         _liftMotor.set(ControlMode.PercentOutput, -speed);
     }
@@ -59,7 +71,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void HomeElevator() {
         if (homingSwitch.get() == true) {
-            _liftMotor.set(ControlMode.PercentOutput, -0.075);
+            _liftMotor.set(ControlMode.PercentOutput, 0.075);
         } else {
             _liftMotor.set(ControlMode.PercentOutput, 0);
             _encoder.reset();
@@ -87,7 +99,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         //_liftMotor.set(ControlMode.PercentOutput, -0.3);
         double output = normalPID.calculate(_encoder.get(), point);
         if (homed == true) {
-            _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(output));
+            _liftMotor.set(ControlMode.PercentOutput, -smoother.calculate(output));
         } else {
             HomeElevator();
         }
@@ -95,6 +107,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Switch Static", homingSwitch.get());
         SmartDashboard.putBoolean("Homed", homed);
         SmartDashboard.putNumber("ele POint", point);
+        SmartDashboard.putNumber("ele level", getLevel());
     }
 
     @Override

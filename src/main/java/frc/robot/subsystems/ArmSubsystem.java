@@ -4,11 +4,14 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmPivotConstants;
@@ -20,11 +23,18 @@ public class ArmSubsystem extends SubsystemBase {
     private final VictorSPX _liftMotor = new VictorSPX(ArmPivotConstants.kArmPivotMotorPort);
     private PIDController normalPID = new PIDController(ArmPivotConstants.kP, ArmPivotConstants.kI, ArmPivotConstants.kD);
     private PIDController slowPID = new PIDController(1.6, 2.4, 0.5);
-    private SlewRateLimiter smoother = new SlewRateLimiter(0.8);
+    private SlewRateLimiter smoother = new SlewRateLimiter(1.4);
+
+    private double MAXSPEED = 0.4;
 
     private double point;
     private boolean slowed;
     private boolean homed;
+    private boolean runnablle = false;
+    double NormSpeed;
+
+    private Timer timer = new Timer();
+
     // Elevator confirmed using a REV through bore encoder
     private final DutyCycleEncoder _encoder = new DutyCycleEncoder(ArmPivotConstants.kEncoderPort);
 
@@ -37,22 +47,40 @@ public class ArmSubsystem extends SubsystemBase {
         normalPID.reset();
         normalPID.setIZone(0.125);
         homed = false;
-        point = 0.25;
+        point = _encoder.get();
         slowed = false;
+        NormSpeed = 0;
     }
 
-    public void driveArm(double speed) {
-        SmartDashboard.putNumber("liftSpeed", speed);
-        if (speed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
-            _liftMotor.set(ControlMode.PercentOutput, speed);
-            SmartDashboard.putBoolean("Up", true);
-        } else if (speed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
-            _liftMotor.set(ControlMode.PercentOutput, speed);
-        } else {
-            _liftMotor.set(ControlMode.PercentOutput, 0);
-        }
-
+    public void enableIt() {
+        SmartDashboard.putBoolean("armRanOnceEnabledit", true);
+        runnablle = false;
+        timer.reset();
+        timer.start();
+        slowPID.reset();
+        smoother.reset(0);
+        slowPID.setIZone(0.2);
+        normalPID.reset();
+        normalPID.setIZone(0.125);
+        homed = false;
+        point = _encoder.get();
+        slowed = false;
+        NormSpeed = 0;
+        runnablle = true;
     }
+
+    // public void driveArm(double speed) {
+    //     SmartDashboard.putNumber("liftSpeed", speed);
+    //     if (speed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
+    //         _liftMotor.set(ControlMode.PercentOutput, speed);
+    //         SmartDashboard.putBoolean("Up", true);
+    //     } else if (speed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
+    //         _liftMotor.set(ControlMode.PercentOutput, speed);
+    //     } else {
+    //         _liftMotor.set(ControlMode.PercentOutput, 0);
+    //     }
+
+    // }
 
     public void setArm(double setPoint, boolean slow) {
         if (slow == true) {
@@ -83,6 +111,10 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
+        SmartDashboard.putBoolean("Runnable", runnablle);
+        SmartDashboard.putNumber("Timer", timer.get());
+
+        if (runnablle == true) {
             if (slowed == true) {
                 double slowSpeed = slowPID.calculate(_encoder.get(), point);
 
@@ -95,7 +127,14 @@ public class ArmSubsystem extends SubsystemBase {
                 }
                 
             } else {
-                double NormSpeed = normalPID.calculate(_encoder.get(), point);
+                NormSpeed = normalPID.calculate(_encoder.get(), point);
+
+
+                if (NormSpeed > MAXSPEED) {
+                    NormSpeed = MAXSPEED;
+                } else if (NormSpeed < -MAXSPEED) {
+                    NormSpeed = -MAXSPEED;
+                }
 
                 if (NormSpeed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
                     _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
@@ -105,6 +144,8 @@ public class ArmSubsystem extends SubsystemBase {
                     _liftMotor.set(ControlMode.PercentOutput, 0);
                 }
             }
+        }
+
         
         SmartDashboard.putNumber("Arm Encoder Output", getEncoder());
         SmartDashboard.putNumber("Pos", point);

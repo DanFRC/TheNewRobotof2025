@@ -40,7 +40,6 @@ public class m_drive extends Command {
     public void initialize() {
         turnController.reset();
         turnController.setIZone(0.4);
-        drivebase.zeroGyro();
         turnAdjustment = drivebase.getGyroYaw();
     }
 

@@ -29,7 +29,7 @@ public class a_setElevatorPosition extends Command {
   private double kI = ElevatorConstants.kI;
   private double kD = ElevatorConstants.kD;
 
-  private double speedRate = 0.5;
+  private double speedRate = 1.2;
 
   // Completes command once the elevator's encoder reads this point or less!
 
@@ -106,7 +106,19 @@ public class a_setElevatorPosition extends Command {
         finished = true;
       }
     } else if (GOAL == "Intake") {
-      goalPos = 4750;
+      goalPos = 2850;
+      _elevator.setElevator(goalPos);
+      if (Math.abs(_elevator.getElevatorError()) < leanience) {
+        finished = true;
+      }
+    } else if (GOAL == "Score") {
+      if (_elevator.getLevel() == 4) {
+        goalPos = 13500;
+      } else if (_elevator.getLevel() == 3) {
+        goalPos = 6000;
+      } else if (_elevator.getLevel() == 2) {
+        goalPos = 1400;
+      }
       _elevator.setElevator(goalPos);
       if (Math.abs(_elevator.getElevatorError()) < leanience) {
         finished = true;
@@ -145,6 +157,8 @@ public class a_setElevatorPosition extends Command {
       setElevator(LEVEL);
     } else if (LEVEL == "Note Down") {
       // GO TO NEUTRAL
+      setElevator(LEVEL);
+    } else if (LEVEL == "Score") {
       setElevator(LEVEL);
     }
    }
