@@ -54,11 +54,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         _liftMotor.set(ControlMode.PercentOutput, -speed);
     }
 
-    public void setElevator(double setPoint) {
-        point = setPoint;
-        normalPID.reset();
-        smoother.reset(0);
-        normalPID.setIZone(1050);
+    public void setElevator(double setPoint, String type) {
+        if (type == "f") {
+            point = setPoint;
+            normalPID.reset();
+            smoother.reset(0);
+            normalPID.setIZone(1050);
+        } else {
+            point = setPoint;
+            normalPID.reset();
+            smoother.reset(0);
+            normalPID.setIZone(1050);
+        }
     }
 
     public void resetHome() {

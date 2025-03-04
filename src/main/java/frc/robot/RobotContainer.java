@@ -290,7 +290,7 @@ public class RobotContainer {
 
 
     // Intake a coral piece
-    _driver.button(13).onTrue(
+    _driver.button(7).onTrue(
       new SequentialCommandGroup(
         new a_setElevatorPosition(
           _elevator, 
@@ -299,7 +299,7 @@ public class RobotContainer {
           _driver
           ),
 
-          Commands.waitSeconds(2),
+          Commands.waitSeconds(1.5),
           
         new a_setArmPosition(
         _armPivot, 
@@ -326,11 +326,10 @@ public class RobotContainer {
           _driver
           ),
 
-          Commands.waitSeconds(1.35),
+          Commands.waitSeconds(0.8),
 
           new a_setArmPosition(
             _armPivot, 
-            _elevator,
             "Neutral", 
             _driver
             )
