@@ -22,8 +22,9 @@ public class ArmSubsystem extends SubsystemBase {
     //Definitions
     private final VictorSPX _liftMotor = new VictorSPX(ArmPivotConstants.kArmPivotMotorPort);
     private PIDController normalPID = new PIDController(ArmPivotConstants.kP, ArmPivotConstants.kI, ArmPivotConstants.kD);
+    private PIDController quickPID = new PIDController(4,2.65,0.475);
     private PIDController slowPID = new PIDController(1.6, 2.4, 0.5);
-    private SlewRateLimiter smoother = new SlewRateLimiter(1.4);
+    private SlewRateLimiter smoother = new SlewRateLimiter(3);
 
     private double MAXSPEED = 0.4;
 
@@ -31,9 +32,9 @@ public class ArmSubsystem extends SubsystemBase {
     private boolean slowed;
     private boolean homed;
     private boolean runnablle = false;
+    private boolean quicked = false;
     double NormSpeed;
-
-    private Timer timer = new Timer();
+    double FASTSpeed;
 
     // Elevator confirmed using a REV through bore encoder
     private final DutyCycleEncoder _encoder = new DutyCycleEncoder(ArmPivotConstants.kEncoderPort);
@@ -46,6 +47,8 @@ public class ArmSubsystem extends SubsystemBase {
         slowPID.setIZone(0.2);
         normalPID.reset();
         normalPID.setIZone(0.125);
+        quickPID.reset();
+        quickPID.setIZone(0.125);
         homed = false;
         point = _encoder.get();
         slowed = false;
@@ -53,10 +56,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void enableIt() {
-        SmartDashboard.putBoolean("armRanOnceEnabledit", true);
         runnablle = false;
-        timer.reset();
-        timer.start();
         slowPID.reset();
         smoother.reset(0);
         slowPID.setIZone(0.2);
@@ -82,15 +82,24 @@ public class ArmSubsystem extends SubsystemBase {
 
     // }
 
-    public void setArm(double setPoint, boolean slow) {
+    public void setArm(double setPoint, boolean slow, boolean quick) {
         if (slow == true) {
             slowPID.reset();
             smoother.reset(0);
             slowPID.setIZone(0.2);
+            quicked = false;
         } else {
-            normalPID.reset();
-            smoother.reset(0);
-            normalPID.setIZone(0.125);
+            if (quick == true) {
+                quickPID.reset();
+                quickPID.setIZone(0.125);
+                quicked = true;
+            } else {
+                normalPID.reset();
+                smoother.reset(0);
+                normalPID.setIZone(0.125);
+                quicked = false;
+            }
+
         }
         point = setPoint;
         slowed = slow;
@@ -112,7 +121,6 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
 
         SmartDashboard.putBoolean("Runnable", runnablle);
-        SmartDashboard.putNumber("Timer", timer.get());
 
         if (runnablle == true) {
             if (slowed == true) {
@@ -127,21 +135,26 @@ public class ArmSubsystem extends SubsystemBase {
                 }
                 
             } else {
-                NormSpeed = normalPID.calculate(_encoder.get(), point);
-
-
-                if (NormSpeed > MAXSPEED) {
-                    NormSpeed = MAXSPEED;
-                } else if (NormSpeed < -MAXSPEED) {
-                    NormSpeed = -MAXSPEED;
-                }
-
-                if (NormSpeed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
-                    _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
-                } else if (NormSpeed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
-                    _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
+                if (quicked == true) {
+                    FASTSpeed = quickPID.calculate(_encoder.get(), point);
+    
+                    if (NormSpeed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
+                        _liftMotor.set(ControlMode.PercentOutput, FASTSpeed);
+                    } else if (NormSpeed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
+                        _liftMotor.set(ControlMode.PercentOutput, FASTSpeed);
+                    } else {
+                        _liftMotor.set(ControlMode.PercentOutput, 0);
+                    }
                 } else {
-                    _liftMotor.set(ControlMode.PercentOutput, 0);
+                    NormSpeed = normalPID.calculate(_encoder.get(), point);
+    
+                    if (NormSpeed < 0 && _encoder.get() >= ArmPivotConstants.kArmPivotDeadZoneMax) {
+                        _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
+                    } else if (NormSpeed > 0 && _encoder.get() <= ArmPivotConstants.kArmPivotDeadZoneMin) {
+                        _liftMotor.set(ControlMode.PercentOutput, smoother.calculate(NormSpeed));
+                    } else {
+                        _liftMotor.set(ControlMode.PercentOutput, 0);
+                    }
                 }
             }
         }

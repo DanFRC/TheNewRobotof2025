@@ -46,7 +46,7 @@ public class a_setArmPosition extends Command {
   private double HIGHREEF = ArmPivotConstants.kArmPivotHigh;
   private double HIGHSCORE = ArmPivotConstants.kArmPivotHighScore;
 
-  private double NEUTRAL = ArmPivotConstants.kArmPivotDeadZoneMax;
+  private double NEUTRAL = ArmPivotConstants.kArmPivotNeutral;
 
   public a_setArmPosition(ArmSubsystem subsystem, ElevatorSubsystem esubsystem, String ReefLevel, CommandJoystick driverContrller) {
     _arm = subsystem;
@@ -78,37 +78,37 @@ public class a_setArmPosition extends Command {
 
     if (GOAL == "Low Goal") {
       goalPos = LOWGOAL;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Low Reef") {
       goalPos = LOWREEF;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Mid Reef") {
       goalPos = MIDREEF;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Algae") {
       goalPos = 0.5;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "High Reef") {
       goalPos = HIGHREEF;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Neutral") {
       goalPos = NEUTRAL;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
@@ -120,13 +120,13 @@ public class a_setArmPosition extends Command {
       } else if (_elevator.getLevel() == 2) {
         goalPos = .34;
       }
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, true);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }
     } else if (GOAL == "Intake") {
       goalPos = ArmPivotConstants.kArmPivotDeadZoneMin + leanience/1.5;
-      _arm.setArm(goalPos, false);
+      _arm.setArm(goalPos, false, false);
       if (Math.abs(_arm.getArmError()) < leanience) {
         finished = true;
       }

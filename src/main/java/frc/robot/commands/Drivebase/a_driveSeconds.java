@@ -5,6 +5,7 @@ import frc.robot.subsystems.DrivebaseSubsystem;
 import frc.robot.subsystems.Sensors.FrontFacingCameraSubsystem;
 import frc.robot.subsystems.Sensors.RearFacingCamera;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +40,7 @@ public class a_driveSeconds extends Command {
     this.heading = turnHeading;
     this.DRIVING_TIME = TIME;
 
-    turnPID = new PIDController(Constants.DrivebaseContants.turnP, Constants.DrivebaseContants.turnI, Constants.DrivebaseContants.turnD);
+    turnPID = new PIDController(0.0125, 0.0074, 0.006);
     drivePID = new PIDController(Constants.DrivebaseContants.driveP, Constants.DrivebaseContants.driveI, Constants.DrivebaseContants.driveD);
 
     this._FCam = front_cam;
@@ -56,11 +57,14 @@ public class a_driveSeconds extends Command {
     timer.start();
   }
 
-  private double calculatePIDMovement(double heading, String TP) {
+  SlewRateLimiter limiter = new SlewRateLimiter(0.8);
+
+  private double calculatePIDMovement(double thisheading, String TP) {
     if (TP == "KEEP-HEADING") {
       double turnError = _drivebase.getGyroYaw() - heading;
-      double output = turnPID.calculate(_drivebase.getGyroYaw(), heading);
-      return output;
+      double output = turnPID.calculate(_drivebase.getGyroYaw(), thisheading);
+
+      return limiter.calculate(output);
     } else {
       return 0;
     }
@@ -68,13 +72,16 @@ public class a_driveSeconds extends Command {
 
   @Override
   public void execute() {
-    if (DriveType == "FO-CSTATION") {
-      _drivebase.drive(driveSpeedx, driveSpeedy, calculatePIDMovement(54, "KEEP-HEADING"), true, true);
+    if (DriveType == "FO-HEADING") {
+      _drivebase.drive(driveSpeedx, driveSpeedy, -calculatePIDMovement(heading, "KEEP-HEADING"), true, true);
     } else if (DriveType == "DDRIVE") {
       _drivebase.drive(driveSpeedx, driveSpeedy, heading, true, false);
     } else if (DriveType == "FO-DDRIVE") {
       _drivebase.drive(driveSpeedx, driveSpeedy, heading, true, true);
     }
+
+    SmartDashboard.putNumber("Auto Drive Timer", timer.get());
+    SmartDashboard.putString("Auto Drive Type", DriveType);
   }
 
   @Override

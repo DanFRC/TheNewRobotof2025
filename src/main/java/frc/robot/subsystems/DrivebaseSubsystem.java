@@ -78,7 +78,11 @@ public class DrivebaseSubsystem extends SubsystemBase {
           _robotDrive.driveCartesian(speedX, speedY, PIDoutput);
         }
       } else if (AUTOTurning == true) {
-        _robotDrive.driveCartesian(speedX, speedY, PIDoutput);
+        if (fieldOriented == true) {
+          _robotDrive.driveCartesian(speedX, speedY, PIDoutput, rotation.fromDegrees(-gyro.getYaw()));
+        } else if (fieldOriented == false) {
+          _robotDrive.driveCartesian(speedX, speedY, PIDoutput);
+        }
       }
 
     }

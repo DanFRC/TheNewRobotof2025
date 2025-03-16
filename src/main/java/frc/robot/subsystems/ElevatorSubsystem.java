@@ -5,9 +5,11 @@ import java.lang.reflect.Parameter;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,7 +20,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     //Definitions
     private PIDController normalPID = new PIDController(ElevatorConstants.kP, ElevatorConstants.kI, ElevatorConstants.kD);
-    private SlewRateLimiter smoother = new SlewRateLimiter(1.4);
+    private SlewRateLimiter smoother = new SlewRateLimiter(1.95);
 
 
 
@@ -65,6 +67,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         homed = false;
     }
 
+    public boolean getHomed() {
+        return homed;
+    }
+
     public double getElevatorError() {
         return normalPID.getError();
     }
@@ -73,12 +79,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (homingSwitch.get() == true) {
             _liftMotor.set(ControlMode.PercentOutput, 0.075);
         } else {
-            _liftMotor.set(ControlMode.PercentOutput, 0);
-            _encoder.reset();
-            homed = true;
-            normalPID.reset();
-            smoother.reset(0);
-            point = 8100;
+            if (DriverStation.isEnabled()) {
+                _liftMotor.set(ControlMode.PercentOutput, 0);
+                _encoder.reset();
+                homed = true;
+                normalPID.reset();
+                smoother.reset(0);
+                point = 0;
+            }
         }
     }
 

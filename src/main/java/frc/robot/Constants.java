@@ -27,7 +27,7 @@ public final class Constants {
   }
 
   public static class ElevatorConstants {
-    public static final int kElevatorMotorPort = 4;
+    public static final int kElevatorMotorPort = 2;
     public static final int kLimitSwitchPort = 0;
     public static final int kENC_A = 8;
     public static final int kENC_B = 9;
@@ -36,14 +36,14 @@ public final class Constants {
     public static double kI = 0.0005;
     public static double kD = 0.0002;
 
-    public static final double kElevatorDeadZoneMax = 16050;
+    public static final double kElevatorDeadZoneMax = 16350;
     public static final double kElevatorDeadZoneMin = 10;
 
-    public static final double kElevatorMid = 8350;
+    public static final double kElevatorMid = 8000;
     public static final double kElevatorLow = 2000;
     public static final double kElevatorDropper = 4000;
 
-    public static final double kElevatorNeutral = 7800;
+    public static final double kElevatorNeutral = 7560;
 
     public static final double kElevatorNoteUp = 7461;
     public static final double kElevatorNoteDown = 5800;
@@ -60,13 +60,13 @@ public final class Constants {
     public static final double kArmPivotLow = 0.24;
     public static final double kArmPivotDropper = 0.3;
     public static final double kArmPivotHigh = 0.225;
-    public static final double kArmPivotNeutral = 0.64;
-    public static final double kArmPivotHighScore = 0.31;
+    public static final double kArmPivotNeutral = 0.62;
+    public static final double kArmPivotHighScore = 0.365;
     public static final double kArmPivotAlgae = 0.4;
 
     public static double kP = 3.25;
     public static double kI = 2.25;
-    public static double kD = 0.89;
+    public static double kD = 0.6;
     // public static double kP = 2.25;
     // public static double kI = 3;
     // public static double kD = 0.6;

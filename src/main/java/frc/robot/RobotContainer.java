@@ -83,7 +83,9 @@ public class RobotContainer {
 
   public void resetArm() {
       new SequentialCommandGroup(
-      new m_enableit(_armPivot)
+      new m_enableit(_armPivot),
+      Commands.waitSeconds(0.1),
+      new a_setArmPosition(_armPivot, _elevator, "High Reef", _driver)
       );
     if (haha == false) {
       haha = true;
@@ -103,12 +105,22 @@ public class RobotContainer {
   ));
 
   _driver.button(2).whileTrue(new SequentialCommandGroup(
-    new a_goToReef(_drivebase, _cameraObject)
+    new a_goToReef(_drivebase, _cameraObject, -1)
   ));
 
   Trigger teleopTrigger = new Trigger(() -> RobotState.isEnabled() && RobotState.isTeleop());
   teleopTrigger.onTrue(new SequentialCommandGroup(
-    new m_enableit(_armPivot)
+    new ParallelCommandGroup(
+      new m_enableit(_armPivot)
+    )
+  ));
+
+  Trigger autonTrigger = new Trigger(() -> RobotState.isEnabled() && RobotState.isAutonomous());
+  autonTrigger.onTrue(new SequentialCommandGroup(
+    new ParallelCommandGroup(
+      new m_enableit(_armPivot),
+      new n_resetGyro(_drivebase)
+    )
   ));
 
     // Home Elevator
@@ -272,12 +284,11 @@ public class RobotContainer {
       ));
 
 
-      //
+      // Neutral Driving Position
       _operator.button(ButtonBoxConstants.kALG_23).onTrue(
         new ParallelCommandGroup(
-          new ResetElevatorEncoder(
-            _elevator
-            )
+          new a_setElevatorPosition(_elevator, _armPivot, "Neutral", _driver),
+          new a_setArmPosition(_armPivot, _elevator, "Neutral", _driver)
         ));
 
       _operator.button(ButtonBoxConstants.kALG_34).onTrue(
@@ -297,9 +308,13 @@ public class RobotContainer {
           _armPivot,
           "Neutral", 
           _driver
-          ),
+          ).unless(() -> 
+            _elevator.getLevel() == 3
+            ),
 
-          Commands.waitSeconds(1.5),
+          Commands.waitSeconds(1.5).unless(() -> 
+          _elevator.getLevel() == 3
+          ),
           
         new a_setArmPosition(
         _armPivot, 
@@ -308,7 +323,7 @@ public class RobotContainer {
         _driver
         ),
 
-        Commands.waitSeconds(1.1),
+        Commands.waitSeconds(0.5),
 
         new a_setElevatorPosition(
           _elevator, 
@@ -317,7 +332,7 @@ public class RobotContainer {
           _driver
           ).withTimeout(0.4),
 
-          Commands.waitSeconds(1),
+          Commands.waitSeconds(0.7),
 
         new a_setElevatorPosition(
           _elevator, 
@@ -348,7 +363,54 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
-      new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 1, 0.3, 0, 0, "DDRIVE")
+      // FORWARD (The Going in thedirection of the intake) == negative, // LEFT positive
+      new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 2.75, -0.12, -0.8, 60, "FO-HEADING"),
+      new a_goToReef(_drivebase, _cameraObject, -1).withTimeout(4),
+      Commands.waitSeconds(0.5),
+      new goToStation(_drivebase, _rearCameraObject).withTimeout(5),
+      Commands.waitSeconds(0.5),
+      new a_goToReef(_drivebase, _cameraObject, -1).withTimeout(5)
+
+      // new ParallelCommandGroup(
+      //   new a_setArmPosition(_armPivot, _elevator, "High Reef", _driver),
+      //   new a_setElevatorPosition(_elevator, _armPivot, "High Reef", _driver)
+      // ),
+      // new a_goToReef(_drivebase, _cameraObject, -1).withTimeout(5),
+      // new a_setArmPosition(_armPivot, _elevator, "High Score", _driver),
+      // new a_setElevatorPosition(_elevator, _armPivot, "Score", _driver)
+
+      // new a_setElevatorPosition(_elevator, _armPivot, "Mid Reef", _driver),
+      // new a_setArmPosition(_armPivot, _elevator, "Mid Reef", _driver),
+      // new a_goToReef(_drivebase, _cameraObject, -1).withTimeout(5),
+      // new a_setArmPosition(_armPivot, _elevator, "High Score", _driver).withTimeout(0.3),
+      // new a_setElevatorPosition(_elevator, _armPivot, "Score", _driver)
+
+      
+
+
+      // new ParallelCommandGroup(
+      //   new a_setElevatorPosition(_elevator, _armPivot, "Mid Reef", _driver),
+      //   new a_setArmPosition(_armPivot, _elevator, "Mid Reef", _driver)
+      // ).withTimeout(0.5),
+      // new a_goToReef(_drivebase, _cameraObject, -1).withTimeout(4),
+      // new ParallelCommandGroup(
+      //   new a_setElevatorPosition(_elevator, _armPivot, "Score", _driver),
+      //   new a_setArmPosition(_armPivot, _elevator, "High Score", _driver)
+      // ).withTimeout(0.5)
+
+
+      // new a_goToReef(_drivebase, _cameraObject, 6).withTimeout(4)
+      // new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 4, 0.06, 0.255, 54, "FO-HEADING").withTimeout(4),
+      // new ParallelCommandGroup(
+      //   new a_setArmPosition(_armPivot, _elevator, "High Reef", _driver),
+      //   new a_setElevatorPosition(_elevator, _armPivot, "Mid Reef", _driver)
+      // ),
+      // Commands.waitSeconds(0.5),
+      // new a_setArmPosition(_armPivot, _elevator, "Neutral", _driver),
+      // new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 4, 0.06, -0.255, 0, "FO-HEADING").withTimeout(4),
+      // new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 1, 0, 0.255, 0.45, "FO-DDRIVE").withTimeout(1),
+      // new a_driveSeconds(_drivebase, _cameraObject, _rearCameraObject, 1, 0, 0, 54, "FO-HEADING"),
+      // new goToStation(_drivebase, _rearCameraObject).withTimeout(4)
     );
   }
 }
